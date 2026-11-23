@@ -9,9 +9,16 @@ export const json = (body, status = 200) =>
 
 export const store = (name) => getStore({ name, consistency: 'strong' });
 
-export async function readList(s, key) {
+// The original site stored data as { comments: [...] } or { scores: [...] }.
+// Read either that shape or a bare array; always write the original shape.
+export async function readList(s, key, field) {
   const v = await s.get(key, { type: 'json' });
-  return Array.isArray(v) ? v : [];
+  if (Array.isArray(v)) return v;
+  if (v && Array.isArray(v[field])) return v[field];
+  return [];
+}
+export function writeList(s, key, field, list) {
+  return s.setJSON(key, { [field]: list });
 }
 
 // Trim, collapse whitespace, strip control characters.
