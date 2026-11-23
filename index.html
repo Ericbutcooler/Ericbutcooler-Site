@@ -119,66 +119,203 @@
     cursor: var(--cur-hand);
     transition: opacity 700ms ease;
     overflow: hidden;
-    --W: min(70vw, 72vh, 920px);
+    --W: min(54vw, 80vh, 1050px);
   }
   @media (orientation: portrait) {
-    #cover { --W: min(92vw, 70vh); }
+    #cover { --W: min(84vw, 66vh); }
   }
   #cover.gone { opacity: 0; pointer-events: none; }
 
-  /* The whole scene. Zoomed via JS on click. */
+  /* The whole scene: a 3D room seen through a camera (CSS perspective).
+     Zoomed via JS on click. */
   .room {
     position: absolute;
     inset: 0;
+    perspective: calc(var(--W) * 2.3);
+    perspective-origin: 50% -6%;
     transition: transform 1150ms cubic-bezier(.72, 0, .28, 1), filter 1150ms ease;
     filter: contrast(1.06) saturate(.9) sepia(.08);
-    will-change: transform;
+    background: #120d0b;
   }
-  /* Wall: dim, warm, lit from above-left like a desk lamp */
-  .wall {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 55% at 22% 8%, rgba(255, 196, 140, .16), transparent 70%),
-      radial-gradient(ellipse 70% 60% at 50% 55%, rgba(150, 40, 24, .22), transparent 70%),
-      linear-gradient(180deg, #2a221d 0%, #1b1512 70%, #120d0b 100%);
-  }
-  /* Faded wallpaper stripes on the wall */
-  .wall::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 2px, transparent 2px 46px);
-  }
-  /* Desk: worn wood laminate */
-  .desk {
-    position: absolute;
-    left: -5%;
-    right: -5%;
-    bottom: 0;
-    height: 20vh;
-    background:
-      radial-gradient(ellipse 45% 70% at 50% 0%, rgba(190, 60, 36, .28), transparent 70%),
-      repeating-linear-gradient(178deg, rgba(0,0,0,.08) 0 3px, transparent 3px 11px),
-      linear-gradient(180deg, #6b4a33 0%, #4d3322 35%, #2e1e14 100%);
-    box-shadow: 0 -2px 0 #8a6448, 0 -14px 30px rgba(0,0,0,.45);
-  }
-
-  .computer {
+  /* Every 3D object hangs off this point (desk surface, front-centre). */
+  .world {
     position: absolute;
     left: 50%;
-    bottom: 15vh;
-    width: var(--W);
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    top: 97%;
+    width: 0;
+    height: 0;
+    --px: 0deg;
+    --py: 0deg;
+    transform: translateZ(calc(var(--W) * -1.3)) rotateX(var(--py)) rotateY(var(--px));
+    transition: transform 900ms cubic-bezier(.2, .7, .3, 1);
+  }
+  @media (orientation: portrait) { .world { top: 86%; } }
+  .world, .grp, .box { transform-style: preserve-3d; }
+  .grp { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+  .plane, .box, .box > .f { position: absolute; }
+
+  /* --- Room: back wall, side wall, desk ------------------------------ */
+  .wall-back {
+    left: calc(var(--W) * -6);
+    top: calc(var(--W) * -6);
+    width: calc(var(--W) * 12);
+    height: calc(var(--W) * 6.05);
+    transform: translateZ(calc(var(--W) * -1.5));
+    background:
+      radial-gradient(ellipse 9% 14% at 46% 78%, rgba(255, 196, 140, .2), transparent 70%),
+      radial-gradient(ellipse 7% 9% at 50% 92%, rgba(170, 45, 26, .3), transparent 70%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 2px, transparent 2px calc(var(--W) * .06)),
+      linear-gradient(180deg, #120e0c 60%, #2a221d 92%, #1d1714 100%);
+  }
+  .wall-side {
+    left: calc(var(--W) * -2.4);
+    top: calc(var(--W) * -6);
+    width: calc(var(--W) * 3);
+    height: calc(var(--W) * 8);
+    transform-origin: left center;
+    transform: translateZ(calc(var(--W) * -1.5)) rotateY(-90deg);
+    background:
+      radial-gradient(ellipse 30% 10% at 15% 74%, rgba(255, 196, 140, .1), transparent 70%),
+      linear-gradient(90deg, #241c18 0%, #17120f 70%, #100c0a 100%);
+  }
+  /* Worn wood desk: grain runs front-to-back so it shows the perspective */
+  .desk-top {
+    left: calc(var(--W) * -2.4);
+    top: 0;
+    width: calc(var(--W) * 6);
+    height: calc(var(--W) * 2.7);
+    transform-origin: top center;
+    transform: translateZ(calc(var(--W) * 1.2)) rotateX(-90deg);
+    background:
+      radial-gradient(ellipse 9% 16% at 38% 50%, rgba(200, 60, 36, .35), transparent 70%),
+      radial-gradient(ellipse 30% 40% at 30% 55%, rgba(255, 190, 130, .16), transparent 70%),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.09) 0 3px, transparent 3px calc(var(--W) * .03), rgba(255,255,255,.025) calc(var(--W) * .03) calc(var(--W) * .033), transparent calc(var(--W) * .033) calc(var(--W) * .05)),
+      linear-gradient(0deg, #2c1d13 0%, #5a3d29 55%, #6e4c34 100%);
+  }
+  .desk-front {
+    left: calc(var(--W) * -2.4);
+    top: 0;
+    width: calc(var(--W) * 6);
+    height: calc(var(--W) * 1.5);
+    transform: translateZ(calc(var(--W) * 1.2));
+    background: linear-gradient(180deg, #8a6448 0, #4a3121 calc(var(--W) * .012), #2a1b11 calc(var(--W) * .05), #120b07 60%);
   }
 
-  /* Monitor shell: yellowed beige plastic */
+  /* --- Generic 3D box: element = front face, --d = depth ------------- */
+  .box > .fr { inset: 0; }
+  .box > .tp { left: 0; bottom: 100%; width: 100%; height: var(--d); transform-origin: bottom; transform: rotateX(90deg); }
+  .box > .bt { left: 0; top: 100%; width: 100%; height: var(--d); transform-origin: top; transform: rotateX(-90deg); }
+  .box > .rt { top: 0; left: 100%; width: var(--d); height: 100%; transform-origin: left; transform: rotateY(90deg); }
+  .box > .lf { top: 0; right: 100%; width: var(--d); height: 100%; transform-origin: right; transform: rotateY(-90deg); }
+  .box > .bk { inset: 0; transform: translateZ(calc(var(--d) * -1)) rotateY(180deg); }
+  /* Beige plastic lit by a lamp at the top-left */
+  .beige > .tp { background: linear-gradient(0deg, #ebe3cd, #cfc4a7); }
+  .beige > .lf { background: linear-gradient(270deg, #d9cfb4, #bfb395); }
+  .beige > .rt { background: linear-gradient(90deg, #ada183, #857a60); }
+  .beige > .bt { background: #6f664f; }
+  .beige > .bk { background: #8f8469; }
+
+  /* --- The computer ------------------------------------------------- */
+  .pc {
+    --pose: translate3d(calc(var(--W) * -.1), 0, 0) rotateY(-36deg);
+    --straight: translate3d(0, 0, 0) rotateY(0deg);
+    transform: var(--pose);
+    transition: transform 1150ms cubic-bezier(.72, 0, .28, 1);
+  }
+  @media (orientation: portrait) {
+    .pc { --pose: translate3d(calc(var(--W) * .06), 0, 0) rotateY(-24deg); }
+  }
+  .pc-shadow {
+    left: calc(var(--W) * -.65);
+    top: 0;
+    width: calc(var(--W) * 1.3);
+    height: calc(var(--W) * 1.4);
+    transform-origin: top center;
+    transform: translate3d(0, -1px, calc(var(--W) * .95)) rotateX(-90deg);
+    background:
+      radial-gradient(ellipse 42% 16% at 50% 13%, rgba(0,0,0,.75), transparent 80%),
+      radial-gradient(ellipse 30% 24% at 50% 63%, rgba(0,0,0,.85), transparent 80%),
+      radial-gradient(ellipse 50% 40% at 50% 55%, rgba(0,0,0,.35), transparent 80%);
+  }
+  .mon {
+    left: calc(var(--W) * -.5);
+    top: calc(var(--W) * -.9);
+    width: var(--W);
+    height: calc(var(--W) * .81);
+    --d: calc(var(--W) * .22);
+    transform: translateZ(calc(var(--W) * .36));
+  }
+  /* The CRT's deep back */
+  .mback {
+    left: calc(var(--W) * -.4);
+    top: calc(var(--W) * -.86);
+    width: calc(var(--W) * .8);
+    height: calc(var(--W) * .7);
+    --d: calc(var(--W) * .6);
+    transform: translateZ(calc(var(--W) * .14));
+  }
+  .mback > .tp {
+    background:
+      repeating-linear-gradient(90deg, transparent 0 calc(var(--W) * .05), rgba(60,50,35,.5) calc(var(--W) * .05) calc(var(--W) * .056), transparent calc(var(--W) * .056) calc(var(--W) * .07)) center / 70% 60% no-repeat,
+      linear-gradient(0deg, #e2d9c1, #c2b698);
+  }
+  .neck3d {
+    left: calc(var(--W) * -.13);
+    top: calc(var(--W) * -.09);
+    width: calc(var(--W) * .26);
+    height: calc(var(--W) * .05);
+    --d: calc(var(--W) * .22);
+    transform: translateZ(calc(var(--W) * .11));
+  }
+  .neck3d > .fr { background: linear-gradient(180deg, #7c7259, #b0a486); }
+  .base3d {
+    left: calc(var(--W) * -.25);
+    top: calc(var(--W) * -.04);
+    width: calc(var(--W) * .5);
+    height: calc(var(--W) * .04);
+    --d: calc(var(--W) * .44);
+    transform: translateZ(calc(var(--W) * .22));
+  }
+  .base3d > .fr { background: linear-gradient(180deg, #d9cfb5, #a99d7f); border-radius: 0 0 4px 4px; }
+  .kb {
+    left: calc(var(--W) * -.44);
+    top: calc(var(--W) * -.03);
+    width: calc(var(--W) * .88);
+    height: calc(var(--W) * .03);
+    --d: calc(var(--W) * .3);
+    transform: translateZ(calc(var(--W) * .8));
+  }
+  .kb > .fr { background: linear-gradient(180deg, #d3c9ad, #aa9e80); }
+  .kb > .tp {
+    background:
+      repeating-linear-gradient(90deg, rgba(70,60,42,.45) 0 2px, transparent 2px calc(var(--W) * .044)) calc(var(--W) * .03) calc(var(--W) * .03) / calc(100% - var(--W) * .06) calc(100% - var(--W) * .06) no-repeat,
+      repeating-linear-gradient(0deg, rgba(70,60,42,.45) 0 2px, transparent 2px calc(var(--W) * .048)) calc(var(--W) * .03) calc(var(--W) * .03) / calc(100% - var(--W) * .06) calc(100% - var(--W) * .06) no-repeat,
+      linear-gradient(0deg, #efe8d4, #d2c8ab);
+  }
+
+  /* --- Tower --------------------------------------------------------- */
+  .tw { display: none; transform: translate3d(calc(var(--W) * .95), 0, calc(var(--W) * -.2)) rotateY(-14deg); }
+  @media (min-aspect-ratio: 4/3) { .tw { display: block; } }
+  .tower3d {
+    left: calc(var(--W) * -.15);
+    top: calc(var(--W) * -.8);
+    width: calc(var(--W) * .3);
+    height: calc(var(--W) * .8);
+    --d: calc(var(--W) * .75);
+    transform: translateZ(calc(var(--W) * .375));
+  }
+  .tw-shadow {
+    left: calc(var(--W) * -.3);
+    top: 0;
+    width: calc(var(--W) * .6);
+    height: calc(var(--W) * .9);
+    transform-origin: top center;
+    transform: translate3d(0, -1px, calc(var(--W) * .45)) rotateY(0) rotateX(-90deg);
+    background: radial-gradient(ellipse 45% 50% at 50% 50%, rgba(0,0,0,.6), transparent 75%);
+  }
+  /* Monitor front: yellowed beige plastic */
   .monitor {
-    width: 100%;
-    border-radius: calc(var(--W) * .035) calc(var(--W) * .035) calc(var(--W) * .02) calc(var(--W) * .02);
+    border-radius: calc(var(--W) * .01);
     background:
       linear-gradient(160deg, rgba(255,255,255,.35) 0%, transparent 30%),
       linear-gradient(180deg, #e3dac2 0%, #d2c7aa 55%, #bdb091 100%);
@@ -187,9 +324,7 @@
       inset 0 2px 0 rgba(255,255,255,.6),
       inset 0 -3px 0 rgba(0,0,0,.18),
       inset 3px 0 0 rgba(255,255,255,.25),
-      inset -3px 0 0 rgba(0,0,0,.12),
-      0 calc(var(--W) * .03) calc(var(--W) * .06) rgba(0,0,0,.55);
-    position: relative;
+      inset -3px 0 0 rgba(0,0,0,.12);
   }
   /* Recessed dark frame around the glass */
   .bezel {
@@ -215,7 +350,7 @@
     display: block;
     pointer-events: none;
     background: #2a0000;
-    filter: saturate(1.3) contrast(1.18) brightness(1.08) blur(.45px);
+    filter: saturate(1.3) contrast(1.18) brightness(1.08);
     transform: scale(1.03);
     animation: crtJitter 3.2s steps(1) infinite;
   }
@@ -302,37 +437,16 @@
     background: #7dff6a;
     box-shadow: 0 0 6px #5dff4a, 0 0 14px rgba(80,255,60,.6);
   }
-  /* Swivel stand */
-  .neck {
-    width: 32%;
-    height: calc(var(--W) * .05);
-    background: linear-gradient(180deg, #8f8469 0%, #b9ad8f 40%, #c8bda0 100%);
-    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-  }
-  .base {
-    width: 56%;
-    height: calc(var(--W) * .045);
-    border-radius: 45% 45% 12% 12% / 70% 70% 30% 30%;
-    background: linear-gradient(180deg, #ddd3ba 0%, #c2b697 60%, #a3977a 100%);
-    box-shadow: 0 calc(var(--W) * .015) calc(var(--W) * .03) rgba(0,0,0,.6);
-  }
-
-  /* Beige tower next to the monitor (wide screens only) */
-  .tower {
-    display: none;
-    position: absolute;
-    bottom: 13vh;
-    left: calc(50% + var(--W) / 2 + 3vw);
-    width: calc(var(--W) * .3);
-    height: calc(var(--W) * .78);
-    border-radius: calc(var(--W) * .012);
+  /* Tower front panel */
+  .tower-front {
+    border-radius: calc(var(--W) * .006);
     background:
       linear-gradient(160deg, rgba(255,255,255,.28) 0%, transparent 35%),
       linear-gradient(180deg, #dfd6be, #c5b99b 70%, #ab9f81);
-    box-shadow: inset 0 2px 0 rgba(255,255,255,.55), inset -3px 0 0 rgba(0,0,0,.12), 0 calc(var(--W) * .03) calc(var(--W) * .05) rgba(0,0,0,.55);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.55), inset -3px 0 0 rgba(0,0,0,.12);
     padding: calc(var(--W) * .03) calc(var(--W) * .025);
   }
-  .tower .bay {
+  .tower-front .bay {
     height: calc(var(--W) * .045);
     margin-bottom: calc(var(--W) * .014);
     border-radius: 3px;
@@ -340,7 +454,7 @@
     box-shadow: inset 0 1px 3px rgba(0,0,0,.35);
     position: relative;
   }
-  .tower .bay::after {
+  .tower-front .bay::after {
     content: '';
     position: absolute;
     left: 12%;
@@ -349,8 +463,8 @@
     height: 2px;
     background: #6e644f;
   }
-  .tower .floppy { width: 70%; margin-left: auto; }
-  .tower .tpower {
+  .tower-front .floppy { width: 70%; margin-left: auto; }
+  .tower-front .tpower {
     width: calc(var(--W) * .05);
     height: calc(var(--W) * .05);
     margin: calc(var(--W) * .08) auto 0;
@@ -358,7 +472,7 @@
     background: linear-gradient(180deg, #d8ceb4, #a89b7c);
     box-shadow: inset 0 -2px 0 rgba(0,0,0,.25), 0 1px 0 rgba(255,255,255,.5);
   }
-  .tower .tled {
+  .tower-front .tled {
     width: calc(var(--W) * .008);
     height: calc(var(--W) * .008);
     margin: calc(var(--W) * .02) auto 0;
@@ -367,7 +481,7 @@
     box-shadow: 0 0 6px #ff9a1a;
     animation: hdd 2.3s steps(1) infinite;
   }
-  .tower .tvents {
+  .tower-front .tvents {
     position: absolute;
     left: 20%;
     right: 20%;
@@ -375,9 +489,6 @@
     height: 14%;
     background: repeating-linear-gradient(180deg, #a3977a 0 2px, transparent 2px 6px);
     opacity: .7;
-  }
-  @media (min-aspect-ratio: 3/2) {
-    .tower { display: block; }
   }
 
   /* Whole-scene camera grain + lens vignette (sits above everything) */
@@ -398,6 +509,8 @@
   }
 
   /* Zoom into the screen on click */
+  #cover.measure .world, #cover.measure .pc, #cover.snap .world, #cover.snap .pc { transition: none !important; }
+  #cover.measure .pc, #cover.entering .pc { transform: var(--straight); }
   #cover.entering .room { filter: contrast(1.06) saturate(1) brightness(1.15); }
   #cover.entering .cam,
   #cover.entering .crt-hint { opacity: 0; transition: opacity 500ms ease; }
@@ -2383,40 +2496,58 @@
 </head>
 <body>
 
-<!-- COVER — an old CRT computer; the video is its wallpaper. Click anywhere zooms in to the site. -->
+<!-- COVER — an old CRT computer in a 3D room; the video is its wallpaper. Click anywhere zooms in to the site. -->
 <div id="cover">
   <div class="room" id="coverRoom">
-    <div class="wall"></div>
-    <div class="desk"></div>
-    <div class="computer">
-      <div class="monitor">
-        <div class="bezel">
-          <div class="screen" id="crtScreen">
-            <video id="coverVideo" src="cover.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
-            <div class="crt-scan"></div>
-            <div class="crt-roll"></div>
-            <div class="crt-flicker"></div>
-            <div class="crt-vignette"></div>
-            <div class="crt-glare"></div>
-            <div class="crt-hint">CLICK ANYWHERE TO ENTER<span>_</span></div>
+    <div class="world" id="coverWorld">
+      <div class="plane wall-back"></div>
+      <div class="plane wall-side"></div>
+      <div class="plane desk-top"></div>
+      <div class="plane desk-front"></div>
+
+      <div class="grp pc" id="pcGroup">
+        <div class="plane pc-shadow"></div>
+        <div class="box beige base3d"><div class="f fr"></div><div class="f tp"></div><div class="f bt"></div><div class="f lf"></div><div class="f rt"></div><div class="f bk"></div></div>
+        <div class="box beige neck3d"><div class="f fr"></div><div class="f tp"></div><div class="f bt"></div><div class="f lf"></div><div class="f rt"></div><div class="f bk"></div></div>
+        <div class="box beige mback"><div class="f fr"></div><div class="f tp"></div><div class="f bt"></div><div class="f lf"></div><div class="f rt"></div><div class="f bk"></div></div>
+        <div class="box beige mon">
+          <div class="f fr monitor">
+            <div class="bezel">
+              <div class="screen" id="crtScreen">
+                <video id="coverVideo" src="cover.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+                <div class="crt-scan"></div>
+                <div class="crt-roll"></div>
+                <div class="crt-flicker"></div>
+                <div class="crt-vignette"></div>
+                <div class="crt-glare"></div>
+                <div class="crt-hint">CLICK ANYWHERE TO ENTER<span>_</span></div>
+              </div>
+            </div>
+            <div class="chin">
+              <span class="badge">EBC&nbsp;17&quot;</span>
+              <span class="grille"></span>
+              <span class="controls"><i></i><i></i><i></i><span class="led"></span><i class="power"></i></span>
+            </div>
           </div>
+          <div class="f tp"></div><div class="f bt"></div><div class="f lf"></div><div class="f rt"></div><div class="f bk"></div>
         </div>
-        <div class="chin">
-          <span class="badge">EBC&nbsp;17&quot;</span>
-          <span class="grille"></span>
-          <span class="controls"><i></i><i></i><i></i><span class="led"></span><i class="power"></i></span>
+        <div class="box beige kb"><div class="f fr"></div><div class="f tp"></div><div class="f bt"></div><div class="f lf"></div><div class="f rt"></div><div class="f bk"></div></div>
+      </div>
+
+      <div class="grp tw">
+        <div class="plane tw-shadow"></div>
+        <div class="box beige tower3d">
+          <div class="f fr tower-front">
+            <div class="bay"></div>
+            <div class="bay"></div>
+            <div class="bay floppy"></div>
+            <div class="tpower"></div>
+            <div class="tled"></div>
+            <div class="tvents"></div>
+          </div>
+          <div class="f tp"></div><div class="f bt"></div><div class="f lf"></div><div class="f rt"></div><div class="f bk"></div>
         </div>
       </div>
-      <div class="neck"></div>
-      <div class="base"></div>
-    </div>
-    <div class="tower">
-      <div class="bay"></div>
-      <div class="bay"></div>
-      <div class="bay floppy"></div>
-      <div class="tpower"></div>
-      <div class="tled"></div>
-      <div class="tvents"></div>
     </div>
     <div class="cam"></div>
   </div>
@@ -2807,11 +2938,22 @@
     function dismiss() {
       if (gone) return;
       gone = true;
-      // Zoom the camera into the CRT screen until it fills the viewport.
+      // Turn the monitor to face the camera while zooming into its screen.
+      // Measure the screen in its straightened pose first, then animate.
       const room = document.getElementById('coverRoom');
+      const world = document.getElementById('coverWorld');
       const scr = document.getElementById('crtScreen');
-      if (room && scr) {
+      if (room && scr && world) {
+        const px = world.style.getPropertyValue('--px'), py = world.style.getPropertyValue('--py');
+        world.style.setProperty('--px', '0deg'); world.style.setProperty('--py', '0deg');
+        cover.classList.add('measure');
         const r = scr.getBoundingClientRect();
+        cover.classList.replace('measure', 'snap');
+        if (px) world.style.setProperty('--px', px);
+        if (py) world.style.setProperty('--py', py);
+        void cover.offsetWidth;
+        cover.classList.remove('snap');
+        world.style.setProperty('--px', '0deg'); world.style.setProperty('--py', '0deg');
         const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
         const s = Math.max(innerWidth / r.width, innerHeight / r.height) * 1.08;
         room.style.transformOrigin = cx + 'px ' + cy + 'px';
@@ -2823,6 +2965,16 @@
         if (v) { try { v.pause(); } catch (e) {} }
         cover.remove();
       }, 1700);
+    }
+    // Subtle camera sway that follows the mouse, so the room feels 3D.
+    const worldEl = document.getElementById('coverWorld');
+    if (worldEl && matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      cover.addEventListener('mousemove', (e) => {
+        if (gone) return;
+        const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+        worldEl.style.setProperty('--px', (x * 7).toFixed(2) + 'deg');
+        worldEl.style.setProperty('--py', (y * -3).toFixed(2) + 'deg');
+      });
     }
     cover.addEventListener('click', dismiss);
     cover.addEventListener('touchend', dismiss);
