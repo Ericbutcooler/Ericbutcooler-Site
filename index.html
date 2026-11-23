@@ -2108,366 +2108,6 @@
     padding: 24px 0;
   }
 
-  /* ---------- Streetfighter — 2D side-scrolling fighter ---------- */
-  .sf-page {
-    --sf-bg: #3a4035;          /* dirty olive backdrop */
-    --sf-floor: #1f2620;       /* near-black floor */
-    --sf-ink: #d6c4a3;         /* parchment text */
-    --sf-accent: #c44a30;      /* warning red */
-    --sf-accent-2: #d8a14a;    /* dusty gold */
-    --sf-eric-bar: #c44a30;    /* Eric = red */
-    --sf-seb-bar: #4a8ec4;     /* Seb = blue */
-
-    position: fixed;
-    inset: 0;
-    background: var(--sf-bg);
-    color: var(--sf-ink);
-    z-index: 800;
-    transform: translateX(100%);
-    transition: transform 0ms;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    font-family: 'Space Mono', monospace;
-  }
-  .sf-page.open { transform: translateX(0); }
-
-  .sf-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 12px 20px;
-    border-bottom: 2px solid var(--sf-ink);
-    background: transparent;
-    z-index: 5;
-  }
-  .sf-back, .sf-leaderboard-btn {
-    background: var(--sf-ink);
-    color: var(--sf-bg);
-    border: 2px solid var(--sf-ink);
-    font-family: 'Space Mono', monospace;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    padding: 8px 12px;
-    cursor: var(--cur-hand);
-    transition: transform 80ms ease;
-  }
-  .sf-back:hover, .sf-leaderboard-btn:hover { transform: scale(1.05); }
-  .sf-back:active, .sf-leaderboard-btn:active { transform: scale(0.95); }
-  .sf-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(24px, 4vw, 38px);
-    letter-spacing: 0.05em;
-    color: var(--sf-ink);
-    flex: 1;
-    text-align: center;
-  }
-
-  .sf-stage {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    background:
-      linear-gradient(to bottom, #4a5246 0%, #3a4035 60%, var(--sf-floor) 60%, var(--sf-floor) 100%);
-  }
-
-  /* Health bars + timer (top of stage) */
-  .sf-hud {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 16px;
-    align-items: center;
-    z-index: 4;
-    pointer-events: none;
-  }
-  .sf-hp-block {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .sf-hp-block.right { align-items: flex-end; }
-  .sf-hp-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 0.1em;
-    color: var(--sf-ink);
-    line-height: 1;
-  }
-  .sf-hp-bar {
-    width: 100%;
-    height: 18px;
-    background: var(--sf-floor);
-    border: 2px solid var(--sf-ink);
-    position: relative;
-    overflow: hidden;
-  }
-  .sf-hp-fill {
-    height: 100%;
-    width: 100%;
-    transition: width 120ms ease-out;
-    transform-origin: left center;
-  }
-  .sf-hp-block.left .sf-hp-fill {
-    background: var(--sf-eric-bar);
-  }
-  .sf-hp-block.right .sf-hp-fill {
-    background: var(--sf-seb-bar);
-    transform-origin: right center;
-    margin-left: auto;
-  }
-  .sf-rounds {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  .sf-timer {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 38px;
-    line-height: 1;
-    color: var(--sf-accent-2);
-    letter-spacing: 0.05em;
-    text-shadow: 0 0 8px rgba(0,0,0,0.4);
-  }
-  .sf-round-pips {
-    display: flex;
-    gap: 6px;
-  }
-  .sf-round-pip {
-    width: 10px;
-    height: 10px;
-    background: var(--sf-floor);
-    border: 1.5px solid var(--sf-ink);
-  }
-  .sf-round-pip.eric-won {
-    background: var(--sf-eric-bar);
-  }
-  .sf-round-pip.seb-won {
-    background: var(--sf-seb-bar);
-  }
-
-  /* Game canvas */
-  .sf-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    image-rendering: -webkit-optimize-contrast;
-  }
-
-  /* Overlays — start, mode select, round announce, KO, victory */
-  .sf-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    background: rgba(31, 38, 32, 0.92);
-    z-index: 6;
-    padding: 20px;
-    text-align: center;
-  }
-  .sf-overlay[aria-hidden="true"] { display: none; }
-  .sf-big {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 12vw, 120px);
-    letter-spacing: 0.04em;
-    line-height: 0.95;
-    color: var(--sf-ink);
-  }
-  .sf-big.bad { color: var(--sf-accent); }
-  .sf-big.good { color: var(--sf-accent-2); }
-  .sf-mono {
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    letter-spacing: 0.06em;
-    color: var(--sf-ink);
-    opacity: 0.85;
-  }
-  .sf-controls-help {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 32px;
-    margin-top: 8px;
-    font-size: 12px;
-    text-align: left;
-  }
-  .sf-controls-help h4 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 0.08em;
-    margin-bottom: 4px;
-  }
-  .sf-controls-help h4.eric { color: var(--sf-eric-bar); }
-  .sf-controls-help h4.seb { color: var(--sf-seb-bar); }
-  .sf-controls-help kbd {
-    background: var(--sf-floor);
-    border: 1px solid var(--sf-ink);
-    padding: 1px 5px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--sf-ink);
-  }
-
-  .sf-mode-select {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
-    width: min(420px, 90%);
-  }
-  .sf-mode-btn, .sf-start-btn {
-    background: var(--sf-ink);
-    color: var(--sf-bg);
-    border: 2px solid var(--sf-ink);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    letter-spacing: 0.1em;
-    padding: 14px 20px;
-    cursor: var(--cur-hand);
-    transition: transform 80ms ease, background 80ms ease;
-  }
-  .sf-mode-btn:hover, .sf-start-btn:hover {
-    transform: scale(1.03);
-    background: var(--sf-accent-2);
-    border-color: var(--sf-accent-2);
-  }
-  .sf-mode-btn:active, .sf-start-btn:active { transform: scale(0.98); }
-  .sf-mode-btn .sf-mode-sub {
-    display: block;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    margin-top: 4px;
-    opacity: 0.7;
-  }
-
-  /* Loading screen */
-  .sf-loading-text {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 0.1em;
-  }
-  .sf-loading-bar {
-    width: min(320px, 60%);
-    height: 8px;
-    background: var(--sf-floor);
-    border: 2px solid var(--sf-ink);
-    overflow: hidden;
-  }
-  .sf-loading-fill {
-    height: 100%;
-    width: 0%;
-    background: var(--sf-accent-2);
-    transition: width 100ms linear;
-  }
-
-  /* Round announce text */
-  .sf-round-announce {
-    background: transparent;
-    pointer-events: none;
-  }
-  .sf-round-announce .sf-big {
-    font-size: clamp(60px, 16vw, 160px);
-    text-shadow: 0 0 20px rgba(0,0,0,0.5);
-    animation: sfPulse 800ms ease-out;
-  }
-  @keyframes sfPulse {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  /* Victory submit form */
-  .sf-name-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: min(320px, 80%);
-    margin-top: 8px;
-  }
-  .sf-name-input {
-    background: var(--sf-floor);
-    border: 2px solid var(--sf-ink);
-    color: var(--sf-ink);
-    padding: 10px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    letter-spacing: 0.05em;
-    text-align: center;
-  }
-  .sf-name-input::placeholder { color: var(--sf-ink); opacity: 0.5; }
-  .sf-submit-status {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    margin-top: 4px;
-    min-height: 1em;
-  }
-  .sf-replay-secondary {
-    margin-top: 8px;
-    background: transparent;
-    color: var(--sf-ink);
-  }
-  .sf-replay-secondary:hover {
-    background: var(--sf-ink);
-    color: var(--sf-bg);
-  }
-
-  /* Leaderboard overlay */
-  .sf-leaderboard-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(31, 38, 32, 0.96);
-    z-index: 8;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    overflow-y: auto;
-  }
-  .sf-leaderboard-overlay[aria-hidden="true"] { display: none; }
-  .sf-lb-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  .sf-lb-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    letter-spacing: 0.08em;
-  }
-  .sf-lb-list {
-    list-style: none;
-    width: min(560px, 100%);
-    margin: 0 auto;
-  }
-  .sf-lb-list li {
-    display: grid;
-    grid-template-columns: 32px 1fr auto auto;
-    gap: 12px;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--sf-ink);
-    font-size: 13px;
-    align-items: center;
-  }
-  .sf-lb-list li:nth-child(1) { color: var(--sf-accent-2); font-size: 15px; }
-  .sf-lb-rank { font-family: 'Bebas Neue', sans-serif; font-size: 18px; }
-  .sf-lb-name { font-weight: 700; letter-spacing: 0.05em; }
-  .sf-lb-meta { opacity: 0.6; font-size: 11px; }
-  .sf-lb-time { font-family: 'Space Mono', monospace; }
-  .sf-lb-empty {
-    text-align: center;
-    margin-top: 32px;
-    opacity: 0.6;
-  }
-
   @media (max-width: 600px) {
     .slider-bar { padding: 0 20px; }
     .head { width: 80px; height: 80px; }
@@ -2483,15 +2123,316 @@
     .rx-tool { font-size: 13px; padding: 8px 12px; }
     .rx-tool .rx-tool-icon { font-size: 22px; }
     .rx-cursor-tool { font-size: 44px; }
-    .sf-header { padding: 10px 14px; gap: 10px; }
-    .sf-title { font-size: 22px; }
-    .sf-back, .sf-leaderboard-btn { font-size: 9px; padding: 6px 8px; }
-    .sf-hp-name { font-size: 16px; }
-    .sf-hp-bar { height: 14px; }
-    .sf-timer { font-size: 28px; }
-    .sf-controls-help { grid-template-columns: 1fr; gap: 12px; font-size: 11px; }
-    .sf-mode-btn, .sf-start-btn { font-size: 18px; padding: 12px 14px; }
   }
+
+  /* ================= RETRO DESKTOP =================
+     Shown right after the intro zooms into the CRT. The cover video keeps
+     playing as the wallpaper so the zoom lands seamlessly on the desktop. */
+  .desktop {
+    position: fixed;
+    inset: 0;
+    z-index: 600;
+    overflow: hidden;
+    background: #2a0000;
+    font-family: 'Space Mono', monospace;
+    color: #f3eee0;
+    transition: opacity 350ms ease, visibility 0s linear 0s;
+  }
+  .desktop.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 350ms ease, visibility 0s linear 350ms; }
+  .dt-wall {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    filter: saturate(1.25) contrast(1.15);
+  }
+  @media (orientation: portrait) { .dt-wall { object-fit: contain; } }
+  /* Dither + darkening so icons stay readable on top of the video */
+  .dt-wall-tint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 45%, transparent 40%, rgba(0,0,0,.45) 100%),
+      repeating-conic-gradient(rgba(0,0,0,.12) 0 25%, transparent 0 50%) 0 0 / 4px 4px;
+  }
+
+  /* Icons */
+  .dt-icons {
+    position: absolute;
+    top: 18px;
+    left: 14px;
+    bottom: 56px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fill, 118px);
+    grid-auto-columns: 104px;
+    gap: 6px 10px;
+    align-content: start;
+  }
+  .dt-icon {
+    all: unset;
+    box-sizing: border-box;
+    width: 104px;
+    height: 118px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+    cursor: var(--cur-hand);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dt-ico {
+    width: 76px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .dt-ico canvas {
+    width: 76px;
+    height: 76px;
+    image-rendering: pixelated;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55));
+  }
+  .dt-label {
+    font-size: 11px;
+    line-height: 1.25;
+    padding: 1px 4px;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    border: 1px dotted transparent;
+  }
+  .dt-icon:hover .dt-label,
+  .dt-icon:focus-visible .dt-label,
+  .dt-icon.selected .dt-label {
+    background: #8a2818;
+    border-color: #f3eee0;
+    text-shadow: none;
+  }
+  .dt-icon:hover .dt-ico canvas,
+  .dt-icon.selected .dt-ico canvas { filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55)) sepia(.6) hue-rotate(-30deg) saturate(2.2) brightness(.85); }
+  /* The hollow "coming soon" slot */
+  .dt-soon { cursor: var(--cur-arrow); }
+  .dt-hollow {
+    border: 2px dashed rgba(243, 238, 224, .35);
+    background: rgba(0, 0, 0, .55);
+    box-shadow: inset 0 0 14px rgba(0,0,0,.9);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-align: center;
+    line-height: 1.5;
+    color: rgba(243, 238, 224, .55);
+  }
+  .dt-soon .dt-label { opacity: .6; }
+  .dt-soon:hover .dt-label { background: transparent; border-color: transparent; text-shadow: 1px 1px 0 #000; }
+
+  /* Bevelled retro chrome, shared by windows, taskbar and buttons */
+  .bevel {
+    background: #d8d0b8;
+    color: #1d1a14;
+    box-shadow: inset 1px 1px 0 #fffaea, inset -1px -1px 0 #5f5845, inset 2px 2px 0 #efe8d2, inset -2px -2px 0 #8e8670;
+  }
+  .bevel-in {
+    box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea, inset 2px 2px 0 #8e8670;
+  }
+
+  /* welcome.txt window */
+  .dt-window {
+    position: absolute;
+    top: 14%;
+    right: 7%;
+    width: min(380px, calc(100vw - 32px));
+    padding: 3px;
+    z-index: 2;
+  }
+  .dt-window.closed { display: none; }
+  .dt-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 3px 0 8px;
+    background: linear-gradient(90deg, #8a2818, #c2552f);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    letter-spacing: .06em;
+    cursor: var(--cur-arrow);
+    touch-action: none;
+  }
+  .dt-titlebar span { flex: 1; }
+  .dt-winbtn {
+    all: unset;
+    width: 18px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: var(--cur-hand);
+  }
+  .dt-winbtn:active { box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea; }
+  .dt-winbody {
+    margin-top: 3px;
+    padding: 12px 14px;
+    background: #fbf7ec;
+    color: #2a2218;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .dt-winbody p + p { margin-top: 8px; }
+  .dt-winbody b { color: #8a2818; }
+
+  /* Taskbar */
+  .dt-taskbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+    z-index: 3;
+  }
+  .dt-start {
+    all: unset;
+    height: 30px;
+    padding: 0 12px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 21px;
+    letter-spacing: .05em;
+    cursor: var(--cur-hand);
+  }
+  .dt-start canvas { width: 22px; height: 22px; image-rendering: pixelated; }
+  .dt-start[aria-expanded="true"] { box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea, inset 2px 2px 0 #8e8670; }
+  .dt-task {
+    all: unset;
+    height: 30px;
+    max-width: 180px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: var(--cur-hand);
+  }
+  .dt-task[hidden] { display: none; }
+  .dt-tray {
+    margin-left: auto;
+    height: 30px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+  }
+
+  /* Start menu */
+  .dt-startmenu {
+    position: absolute;
+    left: 4px;
+    bottom: 40px;
+    width: 230px;
+    padding: 3px;
+    display: none;
+    z-index: 4;
+  }
+  .dt-startmenu.open { display: flex; }
+  .dt-sm-band {
+    width: 26px;
+    background: linear-gradient(0deg, #8a2818, #3a0f08);
+    color: #f3eee0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: .1em;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding: 8px 0;
+    text-align: left;
+  }
+  .dt-sm-items { flex: 1; display: flex; flex-direction: column; padding: 2px; }
+  .dt-sm-item {
+    all: unset;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+    cursor: var(--cur-hand);
+  }
+  .dt-sm-item canvas { width: 28px; height: 28px; image-rendering: pixelated; }
+  .dt-sm-item:hover, .dt-sm-item:focus-visible { background: #8a2818; color: #fff; }
+  .dt-sm-item[aria-disabled="true"] { color: #8e8670; cursor: var(--cur-arrow); }
+  .dt-sm-item[aria-disabled="true"]:hover { background: transparent; color: #8e8670; }
+  .dt-sm-sep { height: 2px; margin: 4px 2px; box-shadow: inset 0 1px 0 #8e8670, inset 0 -1px 0 #fffaea; }
+  .dt-sm-blank { width: 28px; height: 28px; border: 1px dashed #8e8670; background: #2a2218; }
+
+  /* Outline that grows from an icon to full screen when something opens */
+  .dt-zoombox {
+    position: fixed;
+    border: 2px dotted #f3eee0;
+    pointer-events: none;
+    z-index: 5;
+    display: none;
+  }
+
+  /* Header button back to the desktop */
+  .comments-btn.desk-btn { left: auto; right: 16px; }
+  @media (max-width: 600px) { .comments-btn.desk-btn { right: 10px; } }
+
+  @media (max-width: 600px) {
+    .dt-icons { grid-template-rows: repeat(auto-fill, 108px); grid-auto-columns: 92px; top: 12px; left: 8px; }
+    .dt-icon { width: 92px; height: 108px; }
+    .dt-window { top: auto; bottom: 56px; right: 16px; }
+    .dt-task { display: none; }
+  }
+
+  /* ================= CRT TUBE OVER EVERYTHING =================
+     Scanlines, a slow refresh band, edge darkening and rounded black tube
+     corners, so the whole site keeps the old-monitor feel. */
+  .crt-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(180deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse 80% 75% at 50% 50%, transparent 58%, rgba(0,0,0,.5) 100%);
+    mix-blend-mode: multiply;
+  }
+  .crt-overlay::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,.035), transparent);
+    animation: crtRoll 8s linear infinite;
+    mix-blend-mode: screen;
+  }
+  .crt-frame {
+    position: fixed;
+    inset: 0;
+    z-index: 9991;
+    pointer-events: none;
+    border-radius: 22px / 26px;
+    box-shadow: 0 0 0 60px #050403, inset 0 0 50px rgba(0,0,0,.55), inset 0 0 3px rgba(0,0,0,.9);
+  }
+  @media (max-width: 600px) { .crt-frame { border-radius: 14px; } }
+  @media (prefers-reduced-motion: reduce) { .crt-overlay::before { animation: none; } }
 </style>
 </head>
 <body>
@@ -2556,6 +2497,7 @@
 <header>
   <button class="comments-btn" id="menuBtn" aria-label="Open menu">MENU</button>
   <h1>ERICBUTCOOLER</h1>
+  <button class="comments-btn desk-btn" id="deskBtn" aria-label="Back to desktop">DESKTOP</button>
 </header>
 
 <main class="stage" id="stage">
@@ -2569,6 +2511,62 @@
     </div>
   </div>
 </main>
+
+<!-- RETRO DESKTOP — first thing after the intro. Roxy = comments, Vincent = games. -->
+<section class="desktop" id="desktop" aria-label="Desktop">
+  <video class="dt-wall" id="dtWall" src="cover.mp4" autoplay loop muted playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-hidden="true"></video>
+  <div class="dt-wall-tint"></div>
+
+  <div class="dt-icons" role="list">
+    <button class="dt-icon" id="dtRoxy" data-open="comments" role="listitem" aria-label="Comments">
+      <span class="dt-ico"><canvas data-face="roxy" width="40" height="40"></canvas></span>
+      <span class="dt-label">comments</span>
+    </button>
+    <button class="dt-icon" id="dtVincent" data-open="games" role="listitem" aria-label="Games">
+      <span class="dt-ico"><canvas data-face="vincent" width="40" height="40"></canvas></span>
+      <span class="dt-label">games</span>
+    </button>
+    <div class="dt-icon dt-soon" role="listitem" aria-label="Coming soon">
+      <span class="dt-ico dt-hollow">COMING<br>SOON</span>
+      <span class="dt-label">???</span>
+    </div>
+  </div>
+
+  <div class="dt-window bevel" id="dtWelcome" role="dialog" aria-label="welcome.txt">
+    <div class="dt-titlebar" id="dtWelcomeBar">
+      <span>WELCOME.TXT</span>
+      <button class="dt-winbtn bevel" id="dtWelcomeMin" aria-label="Minimise">_</button>
+      <button class="dt-winbtn bevel" id="dtWelcomeClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="dt-winbody bevel-in">
+      <p>welcome to <b>ericbutcooler</b>.</p>
+      <p>click <b>roxy</b> to read and leave comments.<br>click <b>vincent</b> for the games and everything else.</p>
+      <p>more coming soon.</p>
+    </div>
+  </div>
+
+  <div class="dt-startmenu bevel" id="dtStartMenu" role="menu">
+    <div class="dt-sm-band">ERICBUTCOOLER</div>
+    <div class="dt-sm-items">
+      <button class="dt-sm-item" data-open="comments" role="menuitem"><canvas data-face="roxy" width="20" height="20"></canvas>Comments</button>
+      <button class="dt-sm-item" data-open="games" role="menuitem"><canvas data-face="vincent" width="20" height="20"></canvas>Games</button>
+      <div class="dt-sm-item" aria-disabled="true" role="menuitem"><span class="dt-sm-blank"></span>Coming soon</div>
+      <div class="dt-sm-sep"></div>
+      <button class="dt-sm-item" id="dtShutdown" role="menuitem"><span class="dt-sm-blank" style="background:#8a2818;border-color:#3a0f08"></span>Shut down...</button>
+    </div>
+  </div>
+
+  <div class="dt-taskbar bevel">
+    <button class="dt-start bevel" id="dtStart" aria-haspopup="menu" aria-expanded="false"><canvas data-face="vincent" width="12" height="12"></canvas>START</button>
+    <button class="dt-task bevel-in" id="dtTask">welcome.txt</button>
+    <div class="dt-tray bevel-in"><span id="dtClock">--:--</span></div>
+  </div>
+
+  <div class="dt-zoombox" id="dtZoom"></div>
+</section>
+
+<div class="crt-overlay" aria-hidden="true"></div>
+<div class="crt-frame" aria-hidden="true"></div>
 
 <!-- Comments page — slid in/out via face-wipe transition -->
 <section class="comments-page" id="commentsPage" aria-hidden="true">
@@ -2595,7 +2593,6 @@
     <button class="menu-item" data-target="vincent">BEAT UP VINCENT</button>
     <button class="menu-item" data-target="roxy">SHOWERING ROXY</button>
     <button class="menu-item" data-target="doom">DOOMBUTCOOLER</button>
-    <button class="menu-item" data-target="streetfighter">STREETFIGHTER</button>
     <button class="menu-close" id="menuClose" aria-label="Close menu">CLOSE</button>
   </div>
 </div>
@@ -2800,6 +2797,13 @@
       <button class="dm-start-btn dm-replay-secondary" id="dmWinReplayBtn">PLAY AGAIN</button>
     </div>
 
+    <!-- Pause overlay (mouse released) -->
+    <div class="dm-overlay" id="dmPauseOverlay" aria-hidden="true">
+      <h2 class="dm-big">PAUSED</h2>
+      <p class="dm-mono">mouse released</p>
+      <button class="dm-start-btn" id="dmResumeBtn">RESUME</button>
+    </div>
+
     <!-- Leaderboard overlay -->
     <div class="dm-overlay" id="dmLeaderboardOverlay" aria-hidden="true">
       <h2 class="dm-big dm-good">LEADERBOARD</h2>
@@ -2810,109 +2814,6 @@
   </div>
 </section>
 
-<!-- Streetfighter — 2D side-scrolling fighter (Eric vs Seb) -->
-<section class="sf-page" id="sfPage" aria-hidden="true">
-  <header class="sf-header">
-    <button class="sf-back" id="sfBack" aria-label="Back to game">&larr; BACK</button>
-    <h2 class="sf-title">STREETFIGHTER</h2>
-    <button class="sf-leaderboard-btn" id="sfLeaderboardBtn">LEADERBOARD</button>
-  </header>
-
-  <div class="sf-stage" id="sfStage">
-    <canvas class="sf-canvas" id="sfCanvas" width="1280" height="720"></canvas>
-
-    <!-- HUD: HP bars + round pips + timer -->
-    <div class="sf-hud" id="sfHud" aria-hidden="true">
-      <div class="sf-hp-block left">
-        <span class="sf-hp-name" id="sfHpNameP1">ERIC</span>
-        <div class="sf-hp-bar"><div class="sf-hp-fill" id="sfHpFillP1"></div></div>
-      </div>
-      <div class="sf-rounds">
-        <span class="sf-timer" id="sfTimer">60</span>
-        <div class="sf-round-pips" id="sfRoundPips">
-          <span class="sf-round-pip" data-side="left"></span>
-          <span class="sf-round-pip" data-side="left"></span>
-          <span class="sf-round-pip" data-side="right"></span>
-          <span class="sf-round-pip" data-side="right"></span>
-        </div>
-      </div>
-      <div class="sf-hp-block right">
-        <span class="sf-hp-name" id="sfHpNameP2">SEB</span>
-        <div class="sf-hp-bar"><div class="sf-hp-fill" id="sfHpFillP2"></div></div>
-      </div>
-    </div>
-
-    <!-- Mode select (initial) -->
-    <div class="sf-overlay" id="sfStartOverlay">
-      <h2 class="sf-big">STREETFIGHTER</h2>
-      <p class="sf-mono">eric vs seb &middot; best of 3 rounds</p>
-      <div class="sf-mode-select">
-        <button class="sf-mode-btn" id="sfMode1P">
-          1P VS CPU
-          <span class="sf-mode-sub">play as eric, fight cpu seb</span>
-        </button>
-        <button class="sf-mode-btn" id="sfMode2P">
-          2P LOCAL
-          <span class="sf-mode-sub">two players, one keyboard</span>
-        </button>
-      </div>
-      <div class="sf-controls-help">
-        <div>
-          <h4 class="eric">ERIC (left)</h4>
-          <p><kbd>A</kbd>/<kbd>D</kbd> move &middot; <kbd>W</kbd> jump</p>
-          <p><kbd>F</kbd> jab &middot; <kbd>G</kbd> kick &middot; <kbd>H</kbd> uppercut</p>
-          <p><kbd>S</kbd> block</p>
-        </div>
-        <div>
-          <h4 class="seb">SEB (right, 2P only)</h4>
-          <p><kbd>&larr;</kbd>/<kbd>&rarr;</kbd> move &middot; <kbd>&uarr;</kbd> jump</p>
-          <p><kbd>J</kbd> jab &middot; <kbd>K</kbd> kick &middot; <kbd>L</kbd> heavy</p>
-          <p><kbd>&darr;</kbd> block</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading screen -->
-    <div class="sf-overlay" id="sfLoadingOverlay" aria-hidden="true">
-      <p class="sf-loading-text">LOADING FIGHTERS</p>
-      <div class="sf-loading-bar"><div class="sf-loading-fill" id="sfLoadingFill"></div></div>
-      <p class="sf-mono" id="sfLoadingDetail">0 / 14</p>
-    </div>
-
-    <!-- Round announce (FIGHT! / ROUND 2 / etc) -->
-    <div class="sf-overlay sf-round-announce" id="sfRoundAnnounce" aria-hidden="true">
-      <h2 class="sf-big" id="sfRoundAnnounceText">ROUND 1</h2>
-    </div>
-
-    <!-- Round end / KO -->
-    <div class="sf-overlay" id="sfRoundEndOverlay" aria-hidden="true">
-      <h2 class="sf-big" id="sfRoundEndText">KO</h2>
-      <p class="sf-mono" id="sfRoundEndDetail"></p>
-    </div>
-
-    <!-- Match end (victory or defeat) -->
-    <div class="sf-overlay" id="sfMatchEndOverlay" aria-hidden="true">
-      <h2 class="sf-big" id="sfMatchEndText">VICTORY</h2>
-      <p class="sf-mono" id="sfMatchEndDetail"></p>
-      <form class="sf-name-form" id="sfNameForm" autocomplete="off">
-        <input class="sf-name-input" id="sfNameInput" type="text" placeholder="your name" maxlength="20" required>
-        <button class="sf-start-btn" type="submit" id="sfSubmitScore">SUBMIT WIN</button>
-      </form>
-      <p class="sf-submit-status" id="sfSubmitStatus"></p>
-      <button class="sf-start-btn" id="sfRematchBtn">REMATCH</button>
-      <button class="sf-start-btn sf-replay-secondary" id="sfChangeModeBtn">CHANGE MODE</button>
-    </div>
-
-    <!-- Leaderboard overlay -->
-    <div class="sf-leaderboard-overlay" id="sfLeaderboardOverlay" aria-hidden="true">
-      <div class="sf-lb-header">
-        <h2 class="sf-lb-title">STREETFIGHTER WINS</h2>
-        <button class="sf-back" id="sfLbClose">CLOSE</button>
-      </div>
-      <ol class="sf-lb-list" id="sfLbList"></ol>
-    </div>
-  </div>
-</section>
 <div class="wipe" id="wipe" aria-hidden="true">
   <img class="wipe-face" id="wipeFace" alt="">
 </div>
@@ -2938,6 +2839,8 @@
     function dismiss() {
       if (gone) return;
       gone = true;
+      // This click is the user gesture browsers need before sound can play.
+      if (typeof initAudio === 'function') initAudio();
       // Turn the monitor to face the camera while zooming into its screen.
       // Measure the screen in its straightened pose first, then animate.
       const room = document.getElementById('coverRoom');
@@ -3450,7 +3353,6 @@
       else if (target === 'vincent') openVincent();
       else if (target === 'roxy') openRoxy();
       else if (target === 'doom') openDoom();
-      else if (target === 'streetfighter') openStreetfighter();
     });
   });
 
@@ -4439,12 +4341,25 @@
     const ax = Math.floor(dmState.px + Math.cos(dmState.pa) * 0.7);
     const ay = Math.floor(dmState.py + Math.sin(dmState.pa) * 0.7);
     const c = dmGrid[ay]?.[ax];
-    if (c === 2 && dmState.keys.yellow) { dmGrid[ay][ax] = 0; dmShowPickup('yellow door opened'); }
-    else if (c === 3 && dmState.keys.red) { dmGrid[ay][ax] = 0; dmShowPickup('red door opened'); }
-    else if (c === 4 && dmState.keys.blue) { dmGrid[ay][ax] = 0; dmShowPickup('blue door opened'); }
+    if (c === 2 && dmState.keys.yellow) { dmOpenDoorAt(ax, ay); dmShowPickup('yellow door opened'); }
+    else if (c === 3 && dmState.keys.red) { dmOpenDoorAt(ax, ay); dmShowPickup('red door opened'); }
+    else if (c === 4 && dmState.keys.blue) { dmOpenDoorAt(ax, ay); dmShowPickup('blue door opened'); }
     else if (c === 2 || c === 3 || c === 4) {
       const which = c === 2 ? 'yellow' : c === 3 ? 'red' : 'blue';
       dmShowPickup('need ' + which + ' key');
+    }
+  }
+
+  // Doors can be several cells wide — open every touching cell of the same
+  // colour so the player never gets stuck behind half a door.
+  function dmOpenDoorAt(x, y) {
+    const code = dmGrid[y][x];
+    const todo = [[x, y]];
+    while (todo.length) {
+      const [cx, cy] = todo.pop();
+      if (dmGrid[cy]?.[cx] !== code) continue;
+      dmGrid[cy][cx] = 0;
+      todo.push([cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]);
     }
   }
 
@@ -4669,12 +4584,14 @@
     const r = PLAYER_RADIUS;
     const nx = dmState.px + dx;
     const ny = dmState.py + dy;
-    // Try X
-    if (!isSolid(Math.floor(nx + Math.sign(dx) * r), Math.floor(dmState.py))) {
+    // Try X — check the leading edge at both the top and bottom of the player
+    const ex = Math.floor(nx + Math.sign(dx) * r);
+    if (!isSolid(ex, Math.floor(dmState.py - r * 0.9)) && !isSolid(ex, Math.floor(dmState.py + r * 0.9))) {
       dmState.px = nx;
     }
-    // Try Y
-    if (!isSolid(Math.floor(dmState.px), Math.floor(ny + Math.sign(dy) * r))) {
+    // Try Y — same for the left and right side of the player
+    const ey = Math.floor(ny + Math.sign(dy) * r);
+    if (!isSolid(Math.floor(dmState.px - r * 0.9), ey) && !isSolid(Math.floor(dmState.px + r * 0.9), ey)) {
       dmState.py = ny;
     }
   }
@@ -5076,8 +4993,31 @@
     src.start(now);
   }
 
+  // Pause when the mouse is released (Esc, alt-tab) so enemies can't keep
+  // shooting while the player can't aim. Click RESUME to grab the mouse again.
+  let dmHadLock = false;
+  document.addEventListener('pointerlockchange', () => {
+    const locked = document.pointerLockElement === dmCanvas;
+    if (locked) { dmHadLock = true; return; }
+    if (dmHadLock && dmState.running && !dmState.paused) dmPause();
+    dmHadLock = false;
+  });
+  window.addEventListener('blur', () => { if (dmState.running && !dmState.paused) dmPause(); });
+  function dmPause() {
+    dmState.paused = true;
+    dmState.keys_pressed = {};
+    dmPauseOverlay.setAttribute('aria-hidden', 'false');
+  }
+  function dmResume() {
+    dmState.paused = false;
+    dmState.lastT = 0;
+    dmPauseOverlay.setAttribute('aria-hidden', 'true');
+    dmCanvas.requestPointerLock?.();
+  }
+
   function dmFrame(t) {
     if (!dmState.running) return;
+    if (dmState.paused) { dmState.lastT = 0; dmState.rafId = requestAnimationFrame(dmFrame); return; }
     const dt = Math.min(50, t - (dmState.lastT || t));
     dmState.lastT = t;
     dmUpdate(dt);
@@ -5103,6 +5043,8 @@
     dmLeaderboardOverlay.setAttribute('aria-hidden', 'true');
     dmResetWorld();
     dmUpdateHud();
+    dmState.paused = false;
+    dmPauseOverlay.setAttribute('aria-hidden', 'true');
     dmState.running = true;
     dmState.startTime = performance.now();
     if (dmAssets.pistol) dmWeaponEl.src = dmAssets.pistol.src;
@@ -5136,6 +5078,8 @@
 
   function dmStop() {
     dmState.running = false;
+    dmState.paused = false;
+    dmPauseOverlay.setAttribute('aria-hidden', 'true');
     if (dmState.rafId) cancelAnimationFrame(dmState.rafId);
     document.exitPointerLock?.();
   }
@@ -5238,6 +5182,8 @@
     });
   }
 
+  const dmPauseOverlay = document.getElementById('dmPauseOverlay');
+  document.getElementById('dmResumeBtn').addEventListener('click', dmResume);
   dmStartBtn.addEventListener('click', dmStart);
   dmRestartBtn.addEventListener('click', dmStart);
   dmWinReplayBtn.addEventListener('click', dmStart);
@@ -5262,979 +5208,124 @@
   fetchAndRenderComments(false);
   setInterval(() => fetchAndRenderComments(true), POLL_INTERVAL_MS);
 
-  // ============== STREETFIGHTER GAME ENGINE ==================
-  // 2D side-scrolling fighter using cut-out photo sprites of Eric vs Seb.
-  // Best-of-3 rounds, 60s round timer, modes: 1P vs CPU Seb / 2P local.
 
-  const sfPage = document.getElementById('sfPage');
-  const sfBack = document.getElementById('sfBack');
-  const sfCanvas = document.getElementById('sfCanvas');
-  const sfCtx = sfCanvas.getContext('2d');
-  const sfStartOverlay = document.getElementById('sfStartOverlay');
-  const sfLoadingOverlay = document.getElementById('sfLoadingOverlay');
-  const sfLoadingFill = document.getElementById('sfLoadingFill');
-  const sfLoadingDetail = document.getElementById('sfLoadingDetail');
-  const sfRoundAnnounce = document.getElementById('sfRoundAnnounce');
-  const sfRoundAnnounceText = document.getElementById('sfRoundAnnounceText');
-  const sfRoundEndOverlay = document.getElementById('sfRoundEndOverlay');
-  const sfRoundEndText = document.getElementById('sfRoundEndText');
-  const sfRoundEndDetail = document.getElementById('sfRoundEndDetail');
-  const sfMatchEndOverlay = document.getElementById('sfMatchEndOverlay');
-  const sfMatchEndText = document.getElementById('sfMatchEndText');
-  const sfMatchEndDetail = document.getElementById('sfMatchEndDetail');
-  const sfNameForm = document.getElementById('sfNameForm');
-  const sfNameInput = document.getElementById('sfNameInput');
-  const sfSubmitScoreBtn = document.getElementById('sfSubmitScore');
-  const sfSubmitStatus = document.getElementById('sfSubmitStatus');
-  const sfRematchBtn = document.getElementById('sfRematchBtn');
-  const sfChangeModeBtn = document.getElementById('sfChangeModeBtn');
-  const sfMode1P = document.getElementById('sfMode1P');
-  const sfMode2P = document.getElementById('sfMode2P');
-  const sfHud = document.getElementById('sfHud');
-  const sfHpFillP1 = document.getElementById('sfHpFillP1');
-  const sfHpFillP2 = document.getElementById('sfHpFillP2');
-  const sfHpNameP1 = document.getElementById('sfHpNameP1');
-  const sfHpNameP2 = document.getElementById('sfHpNameP2');
-  const sfTimerEl = document.getElementById('sfTimer');
-  const sfRoundPipsEl = document.getElementById('sfRoundPips');
-  const sfLeaderboardBtn = document.getElementById('sfLeaderboardBtn');
-  const sfLeaderboardOverlay = document.getElementById('sfLeaderboardOverlay');
-  const sfLbClose = document.getElementById('sfLbClose');
-  const sfLbList = document.getElementById('sfLbList');
+  // ================= RETRO DESKTOP =================
+  (() => {
+    const desktop = document.getElementById('desktop');
+    if (!desktop) return;
+    const wall = document.getElementById('dtWall');
+    const zoom = document.getElementById('dtZoom');
+    const startBtn = document.getElementById('dtStart');
+    const startMenu = document.getElementById('dtStartMenu');
+    const welcome = document.getElementById('dtWelcome');
+    const task = document.getElementById('dtTask');
+    const clock = document.getElementById('dtClock');
 
-  const SF_LB_ENDPOINT = '/api/leaderboard-streetfighter';
-
-  // ---------- Asset loader ----------
-  // Files live in /streetfighter/. We preload all 14 on first game open and
-  // cache the Image objects. The 15th file (WALKLEFTFOOT.jpg) is unused —
-  // it's a Seb side-kick from behind that doesn't fit any frame slot.
-  const SF_SPRITE_FILES = {
-    eric_still: 'streetfighter/ERICSTILL.png',
-    eric_jab: 'streetfighter/ERICJAB.png',
-    eric_midkick: 'streetfighter/ERICMIDKICK.png',
-    eric_fullkick: 'streetfighter/ERICFULLKICK.png',
-    eric_uppercut: 'streetfighter/ERICUPPERCUT.png',
-    eric_jump: 'streetfighter/ERICJUMP.png',
-    eric_walk_l: 'streetfighter/WALKLEFTFOOT.png',          // Eric walk left foot fwd
-    eric_walk_r: 'streetfighter/ERICWALKRIGHTFOOT.png',
-    seb_still: 'streetfighter/SEBSTILL.png',
-    seb_jab: 'streetfighter/SEBJAB.png',
-    seb_midkick: 'streetfighter/SEBMIDKICK.png',
-    seb_fullkick: 'streetfighter/SEBFULLKICK.png',
-    seb_jump: 'streetfighter/SEBJUMP.png',                  // identical to midkick — handled visually via tilt
-    seb_walk_l: 'streetfighter/SEBWALKLEFTFOOT.png',
-    seb_walk_r: 'streetfighter/SEBWALKRIGHTFOOT.png',
-  };
-
-  const sfSprites = {};
-  // Per-sprite metadata loaded from manifest.json: where in the source image
-  // the figure's feet are (y_frac), so we can render with feet flush to the
-  // floor regardless of how much transparent padding the source has.
-  const sfSpriteMeta = {};
-  let sfAssetsLoaded = false;
-  let sfAssetsLoading = null;
-
-  function sfLoadAssets() {
-    if (sfAssetsLoaded) return Promise.resolve();
-    if (sfAssetsLoading) return sfAssetsLoading;
-
-    // First load manifest, then images
-    const manifestPromise = fetch('streetfighter/manifest.json')
-      .then(r => r.ok ? r.json() : {})
-      .catch(() => ({}));
-
-    const keys = Object.keys(SF_SPRITE_FILES);
-    let loaded = 0;
-    sfAssetsLoading = manifestPromise.then(manifest => {
-      // manifest keys are filenames-without-extension (e.g. "ERICSTILL").
-      // Map sprite key (e.g. "eric_still") -> filename via SF_SPRITE_FILES.
-      Object.keys(SF_SPRITE_FILES).forEach(k => {
-        const path = SF_SPRITE_FILES[k];
-        const base = path.split('/').pop().replace(/\.png$/, '');
-        if (manifest[base]) sfSpriteMeta[k] = manifest[base];
-      });
-      return Promise.all(keys.map(key => new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-          sfSprites[key] = img;
-          loaded++;
-          sfLoadingFill.style.width = (100 * loaded / keys.length) + '%';
-          sfLoadingDetail.textContent = `${loaded} / ${keys.length}`;
-          resolve();
-        };
-        img.onerror = () => {
-          loaded++;
-          sfLoadingFill.style.width = (100 * loaded / keys.length) + '%';
-          sfLoadingDetail.textContent = `${loaded} / ${keys.length}`;
-          resolve();
-        };
-        img.src = SF_SPRITE_FILES[key];
-      })));
-    }).then(() => { sfAssetsLoaded = true; });
-    return sfAssetsLoading;
-  }
-
-  // ---------- Game constants ----------
-  const SF_W = 1280, SF_H = 720;
-  const SF_GROUND_Y = 600;       // y of the floor (top of floor band)
-  const SF_GRAVITY = 2200;       // px/s^2
-  const SF_MOVE_SPEED = 320;     // px/s walk speed
-  const SF_JUMP_VEL = 900;       // initial upward velocity
-  const SF_FIGHTER_W = 200;      // collision/hitbox width
-  const SF_FIGHTER_H = 360;      // collision/hitbox height
-  const SF_SPRITE_DRAW_H = 360;  // visual figure height (body, not full image canvas)
-  const SF_HP_MAX = 100;
-  const SF_ROUND_TIME = 60;      // seconds per round
-  const SF_BLOCK_REDUCTION = 0.25;
-  const SF_HITSTUN_FRAMES = 16;
-  const SF_BLOCKSTUN_FRAMES = 6;
-
-  // Move definitions: startup/active/recovery in frames @ 60fps,
-  // damage, range (horizontal extension from front of fighter),
-  // height_lo/height_hi (in fighter-relative units 0=feet, 1=top), knockback
-  const SF_MOVES = {
-    jab:      { sprite: 'jab',      startup: 4,  active: 4,  recovery: 8,  damage: 6,  range: 110, lo: 0.55, hi: 0.85, knockback: 80 },
-    midkick:  { sprite: 'midkick',  startup: 8,  active: 5,  recovery: 14, damage: 10, range: 150, lo: 0.30, hi: 0.65, knockback: 140 },
-    fullkick: { sprite: 'fullkick', startup: 12, active: 6,  recovery: 22, damage: 16, range: 190, lo: 0.45, hi: 1.00, knockback: 240 },
-    uppercut: { sprite: 'uppercut', startup: 6,  active: 5,  recovery: 24, damage: 14, range: 90,  lo: 0.40, hi: 1.05, knockback: 200 },
-  };
-
-  // ---------- Game state ----------
-  let sfMode = null;             // 'cpu' | '2p'
-  let sfRunning = false;
-  let sfRafId = null;
-  let sfLastTime = 0;
-
-  let sfRoundIndex = 0;          // 0..n
-  let sfRoundsWon = { p1: 0, p2: 0 };
-  let sfRoundActive = false;
-  let sfRoundTimer = SF_ROUND_TIME;
-  let sfMatchStartTime = 0;
-  let sfMatchTotalSeconds = 0;
-  let sfRoundEndDelay = 0;       // countdown before round end overlay shows
-
-  // Per-fighter state factory
-  function sfMakeFighter(id, x, facing) {
-    return {
-      id,                        // 'p1' (eric) | 'p2' (seb)
-      char: id === 'p1' ? 'eric' : 'seb',
-      x,                          // horizontal center
-      y: SF_GROUND_Y,             // bottom-y (feet)
-      vx: 0,
-      vy: 0,
-      facing,                    // -1 (left) | +1 (right)
-      hp: SF_HP_MAX,
-      onGround: true,
-      // current action
-      action: 'still',           // 'still' | 'walk' | 'jump' | 'block' | 'attack' | 'hitstun' | 'blockstun' | 'ko'
-      attackKey: null,           // when action==='attack', which move
-      attackPhase: null,         // 'startup' | 'active' | 'recovery'
-      attackFrameCounter: 0,
-      hitThisAttack: false,      // flag so a single attack only hits once
-      // walk anim toggle (alternating left/right foot frames)
-      walkFrame: 0,
-      walkAnimTimer: 0,
-      // hitstun timer
-      stunFrames: 0,
-      // block flag
-      blocking: false,
+    // Pixel-art icons: shrink the game portraits onto tiny canvases and
+    // let CSS scale them back up with crisp, chunky pixels.
+    const faceSrc = {
+      roxy: document.getElementById('rxRoxyHappy')?.src,
+      vincent: document.getElementById('vpVincent')?.src,
     };
-  }
-
-  let sfP1 = null, sfP2 = null;
-
-  // ---------- Input ----------
-  // P1 (Eric): A/D move, W jump, S block, F=jab G=midkick H=uppercut
-  // P2 (Seb):  Arrows move/jump/block, J=jab K=midkick L=fullkick
-  // (Seb has no uppercut sprite; L=fullkick functions as his heavy)
-  const sfKeys = new Set();
-  function sfKeydown(e) {
-    if (!sfRunning) return;
-    sfKeys.add(e.key.toLowerCase());
-    // Prevent arrow keys from scrolling
-    if (['arrowleft','arrowright','arrowup','arrowdown',' '].includes(e.key.toLowerCase())) {
-      e.preventDefault();
+    const faceImg = {};
+    for (const [k, src] of Object.entries(faceSrc)) {
+      if (!src) continue;
+      const img = new Image();
+      img.onload = () => {
+        desktop.querySelectorAll('canvas[data-face="' + k + '"]').forEach(c => {
+          const ctx = c.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          const s = Math.min(c.width / img.width, c.height / img.height);
+          const w = img.width * s, h = img.height * s;
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.drawImage(img, (c.width - w) / 2, (c.height - h) / 2, w, h);
+        });
+      };
+      img.src = src;
+      faceImg[k] = img;
     }
-  }
-  function sfKeyup(e) {
-    sfKeys.delete(e.key.toLowerCase());
-  }
 
-  // Input snapshot for one fighter for the current frame
-  function sfReadP1Input() {
-    return {
-      left: sfKeys.has('a'),
-      right: sfKeys.has('d'),
-      jump: sfKeys.has('w'),
-      block: sfKeys.has('s'),
-      jab: sfKeys.has('f'),
-      midkick: sfKeys.has('g'),
-      heavy: sfKeys.has('h'),    // uppercut for Eric
+    // Grow a dotted outline from the clicked icon to full screen, then act.
+    function zoomFrom(el, then) {
+      const r = el.getBoundingClientRect();
+      Object.assign(zoom.style, { display: 'block', transition: 'none',
+        left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+      void zoom.offsetWidth;
+      Object.assign(zoom.style, { transition: 'all 260ms ease-in',
+        left: '0px', top: '0px', width: innerWidth + 'px', height: innerHeight + 'px' });
+      setTimeout(() => { zoom.style.display = 'none'; then(); }, 280);
+    }
+
+    function hideDesktop() {
+      desktop.classList.add('hidden');
+      setTimeout(() => { if (desktop.classList.contains('hidden')) wall.pause(); }, 400);
+    }
+    window.showDesktop = function () {
+      if (typeof closeMenu === 'function') closeMenu();
+      wall.play().catch(() => {});
+      desktop.classList.remove('hidden');
     };
-  }
-  function sfReadP2Input() {
-    if (sfMode === 'cpu') return sfAIInput();
-    return {
-      left: sfKeys.has('arrowleft'),
-      right: sfKeys.has('arrowright'),
-      jump: sfKeys.has('arrowup'),
-      block: sfKeys.has('arrowdown'),
-      jab: sfKeys.has('j'),
-      midkick: sfKeys.has('k'),
-      heavy: sfKeys.has('l'),    // fullkick for Seb (no uppercut sprite)
-    };
-  }
 
-  // ---------- Simple CPU AI ----------
-  // The AI tracks horizontal distance to the player, walks toward them when
-  // out of range, attacks when in range, occasionally jumps and blocks.
-  // Reaction time is intentionally a bit dim so a human can win.
-  let sfAIDecisionCooldown = 0;
-  let sfAIDecision = null;
-  function sfAIInput() {
-    if (!sfP1 || !sfP2) return { left:false,right:false,jump:false,block:false,jab:false,midkick:false,heavy:false };
-    sfAIDecisionCooldown -= 1;
-    const dist = sfP1.x - sfP2.x;
-    const absDist = Math.abs(dist);
-
-    // Refresh decision every ~150ms
-    if (sfAIDecisionCooldown <= 0 || !sfAIDecision) {
-      sfAIDecisionCooldown = 8 + Math.floor(Math.random() * 6);
-      const r = Math.random();
-      if (sfP2.action === 'hitstun' || sfP2.action === 'attack') {
-        sfAIDecision = { kind: 'wait' };
-      } else if (absDist < 180) {
-        // In melee range
-        if (r < 0.55) {
-          const attackRoll = Math.random();
-          let move = 'jab';
-          if (attackRoll > 0.7) move = 'heavy';
-          else if (attackRoll > 0.35) move = 'midkick';
-          sfAIDecision = { kind: 'attack', move };
-        } else if (r < 0.75) {
-          sfAIDecision = { kind: 'block', frames: 18 };
-        } else if (r < 0.85) {
-          sfAIDecision = { kind: 'retreat', frames: 14 };
-        } else {
-          sfAIDecision = { kind: 'jump' };
-        }
-      } else if (absDist < 380) {
-        // Mid range — close in or occasional approach jump
-        if (r < 0.85) sfAIDecision = { kind: 'approach', frames: 18 };
-        else sfAIDecision = { kind: 'jump' };
-      } else {
-        sfAIDecision = { kind: 'approach', frames: 30 };
-      }
-    } else if (sfAIDecision.frames !== undefined) {
-      sfAIDecision.frames -= 1;
-      if (sfAIDecision.frames <= 0) sfAIDecision = null;
+    function open(what, fromEl) {
+      closeStart();
+      desktop.querySelectorAll('.dt-icon.selected').forEach(i => i.classList.remove('selected'));
+      if (fromEl && fromEl.classList.contains('dt-icon')) fromEl.classList.add('selected');
+      const go = () => {
+        if (what === 'comments') openComments();
+        else if (what === 'games') hideDesktop();
+        setTimeout(() => fromEl?.classList.remove('selected'), 900);
+      };
+      fromEl ? zoomFrom(fromEl, go) : go();
     }
-
-    const input = { left:false,right:false,jump:false,block:false,jab:false,midkick:false,heavy:false };
-    if (!sfAIDecision) return input;
-    switch (sfAIDecision.kind) {
-      case 'approach':
-        if (dist > 0) input.left = true; else input.right = true;
-        break;
-      case 'retreat':
-        if (dist > 0) input.right = true; else input.left = true;
-        break;
-      case 'attack':
-        input[sfAIDecision.move] = true;
-        // Single-frame trigger; clear so we don't spam
-        sfAIDecision = { kind: 'wait', frames: 18 };
-        break;
-      case 'block':
-        input.block = true;
-        break;
-      case 'jump':
-        if (sfP2.onGround) input.jump = true;
-        sfAIDecision = { kind: 'wait', frames: 8 };
-        break;
-      case 'wait':
-      default:
-        break;
-    }
-    return input;
-  }
-
-  // ---------- Round / match flow ----------
-  function sfStartMatch(mode) {
-    sfMode = mode;
-    sfRoundIndex = 0;
-    sfRoundsWon = { p1: 0, p2: 0 };
-    sfMatchStartTime = performance.now();
-    sfHpNameP1.textContent = 'ERIC' + (mode === 'cpu' ? ' (you)' : ' (1P)');
-    sfHpNameP2.textContent = 'SEB' + (mode === 'cpu' ? ' (cpu)' : ' (2P)');
-    sfStartRound();
-  }
-
-  function sfStartRound() {
-    sfRoundIndex++;
-    // Reset fighters to mirrored positions
-    sfP1 = sfMakeFighter('p1', SF_W * 0.30, +1);
-    sfP2 = sfMakeFighter('p2', SF_W * 0.70, -1);
-    sfRoundTimer = SF_ROUND_TIME;
-    sfRoundActive = false;
-    sfRoundEndDelay = 0;
-    sfHideAllOverlays();
-    sfHud.setAttribute('aria-hidden', 'false');
-    sfRenderRoundPips();
-    sfUpdateHpBars();
-    sfTimerEl.textContent = sfRoundTimer;
-
-    // Show round announce, then "FIGHT!", then start
-    sfRoundAnnounceText.textContent = 'ROUND ' + sfRoundIndex;
-    sfRoundAnnounce.setAttribute('aria-hidden', 'false');
-    setTimeout(() => {
-      sfRoundAnnounceText.textContent = 'FIGHT!';
-    }, 900);
-    setTimeout(() => {
-      sfRoundAnnounce.setAttribute('aria-hidden', 'true');
-      sfRoundActive = true;
-    }, 1700);
-
-    if (!sfRunning) {
-      sfRunning = true;
-      sfLastTime = performance.now();
-      sfRafId = requestAnimationFrame(sfTick);
-    }
-  }
-
-  function sfEndRound(winner, reason) {
-    sfRoundActive = false;
-    if (winner === 'p1') sfRoundsWon.p1++;
-    else if (winner === 'p2') sfRoundsWon.p2++;
-    // (winner === 'draw' awards no rounds)
-    sfRenderRoundPips();
-
-    // If someone has won 2 rounds, end match
-    if (sfRoundsWon.p1 >= 2 || sfRoundsWon.p2 >= 2) {
-      setTimeout(() => sfEndMatch(sfRoundsWon.p1 > sfRoundsWon.p2 ? 'p1' : 'p2'), 1400);
-      sfShowRoundEnd(winner, reason);
-      return;
-    }
-    sfShowRoundEnd(winner, reason);
-    setTimeout(() => sfStartRound(), 2200);
-  }
-
-  function sfShowRoundEnd(winner, reason) {
-    let text, detail;
-    if (winner === 'draw') {
-      text = 'DOUBLE KO';
-      detail = 'no one wins this round';
-    } else if (winner === 'p1') {
-      text = (reason === 'ko') ? 'KO!' : 'TIME!';
-      detail = sfMode === 'cpu' ? 'you take the round' : 'eric takes the round';
-    } else {
-      text = (reason === 'ko') ? 'KO!' : 'TIME!';
-      detail = sfMode === 'cpu' ? 'seb takes the round' : 'seb takes the round';
-    }
-    sfRoundEndText.textContent = text;
-    sfRoundEndText.classList.toggle('bad', winner === 'p2' && sfMode === 'cpu');
-    sfRoundEndText.classList.toggle('good', winner === 'p1');
-    sfRoundEndDetail.textContent = detail;
-    sfRoundEndOverlay.setAttribute('aria-hidden', 'false');
-    setTimeout(() => sfRoundEndOverlay.setAttribute('aria-hidden', 'true'), 1900);
-  }
-
-  function sfEndMatch(winner) {
-    sfRunning = false;
-    if (sfRafId) cancelAnimationFrame(sfRafId);
-    sfRafId = null;
-    sfMatchTotalSeconds = (performance.now() - sfMatchStartTime) / 1000;
-
-    sfHideAllOverlays();
-    sfMatchEndOverlay.setAttribute('aria-hidden', 'false');
-
-    let title, detail;
-    if (sfMode === 'cpu') {
-      if (winner === 'p1') {
-        title = 'VICTORY';
-        detail = `you beat seb ${sfRoundsWon.p1}-${sfRoundsWon.p2} in ${sfFormatTime(sfMatchTotalSeconds)}`;
-        sfMatchEndText.classList.remove('bad'); sfMatchEndText.classList.add('good');
-        sfNameForm.style.display = '';
-        sfNameInput.value = '';
-        sfSubmitStatus.textContent = '';
-        sfSubmitScoreBtn.disabled = false;
-      } else {
-        title = 'DEFEATED';
-        detail = `seb beat you ${sfRoundsWon.p2}-${sfRoundsWon.p1}`;
-        sfMatchEndText.classList.remove('good'); sfMatchEndText.classList.add('bad');
-        sfNameForm.style.display = 'none';
-        sfSubmitStatus.textContent = '';
-      }
-    } else {
-      title = winner === 'p1' ? 'ERIC WINS' : 'SEB WINS';
-      detail = `${sfRoundsWon.p1} - ${sfRoundsWon.p2} in ${sfFormatTime(sfMatchTotalSeconds)}`;
-      sfMatchEndText.classList.remove('bad'); sfMatchEndText.classList.add('good');
-      sfNameForm.style.display = '';
-      sfNameInput.value = '';
-      sfNameInput.placeholder = winner === 'p1' ? 'eric player\'s name' : 'seb player\'s name';
-      sfSubmitStatus.textContent = '';
-      sfSubmitScoreBtn.disabled = false;
-    }
-    sfMatchEndText.textContent = title;
-    sfMatchEndDetail.textContent = detail;
-    sfMatchEndOverlay.dataset.winner = winner;  // remember for submission
-  }
-
-  function sfFormatTime(s) {
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, '0')}`;
-  }
-
-  function sfHideAllOverlays() {
-    sfStartOverlay.setAttribute('aria-hidden', 'true');
-    sfLoadingOverlay.setAttribute('aria-hidden', 'true');
-    sfRoundAnnounce.setAttribute('aria-hidden', 'true');
-    sfRoundEndOverlay.setAttribute('aria-hidden', 'true');
-    sfMatchEndOverlay.setAttribute('aria-hidden', 'true');
-    sfLeaderboardOverlay.setAttribute('aria-hidden', 'true');
-  }
-
-  function sfUpdateHpBars() {
-    if (!sfP1 || !sfP2) return;
-    sfHpFillP1.style.width = Math.max(0, sfP1.hp / SF_HP_MAX * 100) + '%';
-    sfHpFillP2.style.width = Math.max(0, sfP2.hp / SF_HP_MAX * 100) + '%';
-  }
-
-  function sfRenderRoundPips() {
-    // 4 pips: 2 for left (p1 wins), 2 for right (p2 wins)
-    const pips = sfRoundPipsEl.querySelectorAll('.sf-round-pip');
-    pips.forEach(p => { p.classList.remove('eric-won', 'seb-won'); });
-    for (let i = 0; i < sfRoundsWon.p1 && i < 2; i++) pips[i].classList.add('eric-won');
-    for (let i = 0; i < sfRoundsWon.p2 && i < 2; i++) pips[2 + i].classList.add('seb-won');
-  }
-
-  // ---------- Per-frame logic ----------
-  function sfTick(now) {
-    if (!sfRunning) return;
-    const dt = Math.min(0.05, (now - sfLastTime) / 1000);
-    sfLastTime = now;
-
-    if (sfRoundActive) {
-      sfRoundTimer -= dt;
-      if (sfRoundTimer <= 0) {
-        sfRoundTimer = 0;
-        // Time up — winner has more HP
-        let winner;
-        if (sfP1.hp > sfP2.hp) winner = 'p1';
-        else if (sfP2.hp > sfP1.hp) winner = 'p2';
-        else winner = 'draw';
-        sfEndRound(winner, 'time');
-      }
-      sfTimerEl.textContent = Math.ceil(sfRoundTimer);
-    }
-
-    sfStepFighter(sfP1, sfReadP1Input(), sfP2, dt);
-    sfStepFighter(sfP2, sfReadP2Input(), sfP1, dt);
-
-    // Maintain facing — fighters always face each other when on ground
-    if (sfP1.onGround && sfP1.action !== 'attack' && sfP1.action !== 'hitstun') {
-      sfP1.facing = sfP2.x > sfP1.x ? +1 : -1;
-    }
-    if (sfP2.onGround && sfP2.action !== 'attack' && sfP2.action !== 'hitstun') {
-      sfP2.facing = sfP1.x > sfP2.x ? +1 : -1;
-    }
-
-    // Resolve inter-fighter collision (don't let them overlap on ground)
-    sfResolveBodyCollision(sfP1, sfP2);
-
-    // Check round-end conditions
-    if (sfRoundActive) {
-      if (sfP1.hp <= 0 && sfP2.hp <= 0) sfEndRound('draw', 'ko');
-      else if (sfP1.hp <= 0) sfEndRound('p2', 'ko');
-      else if (sfP2.hp <= 0) sfEndRound('p1', 'ko');
-    }
-
-    sfUpdateHpBars();
-    sfRender();
-    sfRafId = requestAnimationFrame(sfTick);
-  }
-
-  function sfStepFighter(f, input, opponent, dt) {
-    if (f.hp <= 0) {
-      f.action = 'ko';
-    }
-
-    // Hitstun / blockstun take precedence — frozen for N frames
-    if (f.stunFrames > 0) {
-      f.stunFrames--;
-      // Apply gravity / land
-      f.vy -= SF_GRAVITY * dt;
-      f.y -= f.vy * dt;
-      if (f.y >= SF_GROUND_Y) { f.y = SF_GROUND_Y; f.vy = 0; f.onGround = true; }
-      // Bleed off horizontal velocity from knockback
-      f.x += f.vx * dt;
-      f.vx *= 0.85;
-      sfClampX(f);
-      return;
-    }
-
-    // If currently attacking, advance attack frames
-    if (f.action === 'attack') {
-      f.attackFrameCounter++;
-      const move = SF_MOVES[f.attackKey];
-      if (f.attackPhase === 'startup' && f.attackFrameCounter >= move.startup) {
-        f.attackPhase = 'active';
-        f.attackFrameCounter = 0;
-      } else if (f.attackPhase === 'active') {
-        // Check hit
-        if (!f.hitThisAttack && opponent.hp > 0 && opponent.action !== 'ko') {
-          if (sfAttackHits(f, opponent, move)) {
-            f.hitThisAttack = true;
-            sfApplyHit(f, opponent, move);
-          }
-        }
-        if (f.attackFrameCounter >= move.active) {
-          f.attackPhase = 'recovery';
-          f.attackFrameCounter = 0;
-        }
-      } else if (f.attackPhase === 'recovery' && f.attackFrameCounter >= move.recovery) {
-        f.action = 'still';
-        f.attackKey = null;
-        f.attackPhase = null;
-        f.attackFrameCounter = 0;
-        f.hitThisAttack = false;
-      }
-      // While attacking on ground, no movement; in air, momentum carries
-      if (!f.onGround) {
-        f.vy -= SF_GRAVITY * dt;
-        f.y -= f.vy * dt;
-        f.x += f.vx * dt;
-        if (f.y >= SF_GROUND_Y) { f.y = SF_GROUND_Y; f.vy = 0; f.onGround = true; }
-      }
-      sfClampX(f);
-      return;
-    }
-
-    // Not attacking — read input
-    f.blocking = input.block && f.onGround;
-
-    // Air physics first
-    if (!f.onGround) {
-      f.vy -= SF_GRAVITY * dt;
-      f.y -= f.vy * dt;
-      // air control (limited)
-      const airAccel = 600;
-      if (input.left) f.vx -= airAccel * dt;
-      else if (input.right) f.vx += airAccel * dt;
-      // cap
-      f.vx = Math.max(-SF_MOVE_SPEED, Math.min(SF_MOVE_SPEED, f.vx));
-      f.x += f.vx * dt;
-      if (f.y >= SF_GROUND_Y) {
-        f.y = SF_GROUND_Y; f.vy = 0; f.onGround = true; f.vx = 0;
-      }
-      f.action = 'jump';
-      sfClampX(f);
-      return;
-    }
-
-    // On the ground:
-    if (input.jump && f.onGround) {
-      f.vy = SF_JUMP_VEL;
-      f.onGround = false;
-      f.action = 'jump';
-      sfClampX(f);
-      return;
-    }
-
-    // Attack inputs (priority: heavy > midkick > jab)
-    let attackKey = null;
-    if (input.heavy) attackKey = (f.char === 'eric') ? 'uppercut' : 'fullkick';
-    else if (input.midkick) attackKey = 'midkick';
-    else if (input.jab) attackKey = 'jab';
-
-    if (attackKey) {
-      f.action = 'attack';
-      f.attackKey = attackKey;
-      f.attackPhase = 'startup';
-      f.attackFrameCounter = 0;
-      f.hitThisAttack = false;
-      f.vx = 0;
-      return;
-    }
-
-    if (f.blocking) {
-      f.action = 'block';
-      f.vx = 0;
-      return;
-    }
-
-    // Movement
-    if (input.left && !input.right) {
-      f.vx = -SF_MOVE_SPEED;
-      f.x += f.vx * dt;
-      f.action = 'walk';
-      f.walkAnimTimer += dt;
-      if (f.walkAnimTimer > 0.18) { f.walkAnimTimer = 0; f.walkFrame ^= 1; }
-    } else if (input.right && !input.left) {
-      f.vx = SF_MOVE_SPEED;
-      f.x += f.vx * dt;
-      f.action = 'walk';
-      f.walkAnimTimer += dt;
-      if (f.walkAnimTimer > 0.18) { f.walkAnimTimer = 0; f.walkFrame ^= 1; }
-    } else {
-      f.vx = 0;
-      f.action = 'still';
-    }
-    sfClampX(f);
-  }
-
-  function sfClampX(f) {
-    f.x = Math.max(SF_FIGHTER_W * 0.5, Math.min(SF_W - SF_FIGHTER_W * 0.5, f.x));
-  }
-
-  function sfResolveBodyCollision(a, b) {
-    // Prevent ground-level overlap of bodies
-    if (!a.onGround || !b.onGround) return;
-    const dx = b.x - a.x;
-    const overlap = SF_FIGHTER_W * 0.7 - Math.abs(dx);
-    if (overlap > 0) {
-      const sign = dx === 0 ? 1 : Math.sign(dx);
-      a.x -= sign * overlap * 0.5;
-      b.x += sign * overlap * 0.5;
-      sfClampX(a); sfClampX(b);
-    }
-  }
-
-  function sfAttackHits(attacker, defender, move) {
-    // Both fighters must be roughly at same vertical band (we approximate w/ ground check)
-    // Hit zone: a horizontal slab in front of attacker, of length=move.range, height-band lo..hi of fighter height.
-    const front = attacker.x + attacker.facing * (SF_FIGHTER_W * 0.5);
-    const tip = front + attacker.facing * move.range;
-    const minX = Math.min(front, tip);
-    const maxX = Math.max(front, tip);
-
-    // Defender's body box (centered on x, from y-SF_FIGHTER_H to y)
-    const dMin = defender.x - SF_FIGHTER_W * 0.5;
-    const dMax = defender.x + SF_FIGHTER_W * 0.5;
-
-    if (maxX < dMin || minX > dMax) return false;
-
-    // Vertical: defender is from feet at y to head at y - SF_FIGHTER_H
-    // Move's lo/hi are in fighter-relative units (0=feet, 1=top)
-    const attackerFeetY = attacker.y;
-    const moveLo = attackerFeetY - move.lo * SF_FIGHTER_H;
-    const moveHi = attackerFeetY - move.hi * SF_FIGHTER_H;
-    const moveBandTop = Math.min(moveLo, moveHi);
-    const moveBandBottom = Math.max(moveLo, moveHi);
-
-    const defenderFeetY = defender.y;
-    const defenderTop = defender.y - SF_FIGHTER_H;
-
-    // Bands overlap?
-    if (moveBandBottom < defenderTop || moveBandTop > defenderFeetY) return false;
-    return true;
-  }
-
-  function sfApplyHit(attacker, defender, move) {
-    let dmg = move.damage;
-    let stun = SF_HITSTUN_FRAMES;
-    let blocked = false;
-    if (defender.blocking) {
-      // Blocking only stops attacks coming from in-front (i.e. defender is facing attacker)
-      const facingTowardAttacker = (attacker.x > defender.x && defender.facing > 0) ||
-                                    (attacker.x < defender.x && defender.facing < 0);
-      if (facingTowardAttacker) {
-        dmg = Math.ceil(dmg * SF_BLOCK_REDUCTION);
-        stun = SF_BLOCKSTUN_FRAMES;
-        blocked = true;
-      }
-    }
-    defender.hp = Math.max(0, defender.hp - dmg);
-    defender.stunFrames = stun;
-    defender.action = blocked ? 'blockstun' : 'hitstun';
-    // Knockback: push defender away from attacker
-    const dir = (defender.x >= attacker.x) ? 1 : -1;
-    defender.vx = dir * (move.knockback * (blocked ? 0.4 : 1));
-    // Mild lift on uppercut/fullkick
-    if (move.sprite === 'uppercut' || move.sprite === 'fullkick') {
-      defender.vy = 350;
-      defender.onGround = false;
-      defender.y -= 1;
-    }
-  }
-
-  // ---------- Rendering ----------
-  function sfRender() {
-    // background
-    sfCtx.clearRect(0, 0, SF_W, SF_H);
-    // sky/wall
-    const grad = sfCtx.createLinearGradient(0, 0, 0, SF_GROUND_Y);
-    grad.addColorStop(0, '#4a5246');
-    grad.addColorStop(1, '#3a4035');
-    sfCtx.fillStyle = grad;
-    sfCtx.fillRect(0, 0, SF_W, SF_GROUND_Y);
-    // floor
-    sfCtx.fillStyle = '#1f2620';
-    sfCtx.fillRect(0, SF_GROUND_Y, SF_W, SF_H - SF_GROUND_Y);
-    // floor stripe (subtle horizon detail)
-    sfCtx.fillStyle = 'rgba(138, 40, 24, 0.3)';
-    sfCtx.fillRect(0, SF_GROUND_Y, SF_W, 4);
-
-    // Background detail: silhouettes / vignette
-    const radial = sfCtx.createRadialGradient(SF_W / 2, SF_H * 0.4, SF_W * 0.2, SF_W / 2, SF_H * 0.4, SF_W * 0.7);
-    radial.addColorStop(0, 'rgba(0,0,0,0)');
-    radial.addColorStop(1, 'rgba(0,0,0,0.5)');
-    sfCtx.fillStyle = radial;
-    sfCtx.fillRect(0, 0, SF_W, SF_H);
-
-    // Draw fighters — back-most first so closer one overlaps
-    const order = (sfP1.x <= sfP2.x) ? [sfP1, sfP2] : [sfP2, sfP1];
-    sfDrawFighter(order[0]);
-    sfDrawFighter(order[1]);
-  }
-
-  function sfDrawFighter(f) {
-    if (!f) return;
-    const sprite = sfSpriteFor(f);
-    const meta = sfSpriteMetaFor(f);
-    if (!sprite || !sprite.complete) {
-      // Fallback rectangle if asset missing
-      sfCtx.fillStyle = f.id === 'p1' ? '#c44a30' : '#4a8ec4';
-      sfCtx.fillRect(f.x - SF_FIGHTER_W / 2, f.y - SF_FIGHTER_H, SF_FIGHTER_W, SF_FIGHTER_H);
-      return;
-    }
-
-    // Scale: we want the figure's height (not the whole image height) to be
-    // about SF_SPRITE_DRAW_H px. Use the manifest's bbox_h_frac if available;
-    // fall back to assuming the figure fills the whole image.
-    const bboxHFrac = meta ? meta.bbox_h_frac : 1.0;
-    const footYFrac = meta ? meta.foot_y_frac : 1.0;
-    // (Photographed natural body height as a fraction of image height)
-    const fullImgH = SF_SPRITE_DRAW_H / bboxHFrac;
-    const aspect = sprite.naturalWidth / sprite.naturalHeight;
-    const drawH = fullImgH;
-    const drawW = drawH * aspect;
-    // Place sprite so the figure's feet land at f.y:
-    //   bottom of figure = drawY + drawH * footYFrac = f.y
-    //   => drawY = f.y - drawH * footYFrac
-    const drawY = f.y - drawH * footYFrac;
-
-    sfCtx.save();
-    const spriteFacingLeft = sfSpriteFacesLeft(f);
-    const needsFlip = (spriteFacingLeft && f.facing > 0) || (!spriteFacingLeft && f.facing < 0);
-
-    // Position transform origin at sprite center
-    const cx = f.x;
-    const cy = drawY + drawH / 2;
-    sfCtx.translate(cx, cy);
-    if (needsFlip) sfCtx.scale(-1, 1);
-
-    // Special-case: Seb's "jump" sprite is identical to his midkick.
-    // Tilt it slightly forward (toward facing direction) so it reads as a different pose.
-    if (f.action === 'jump' && f.char === 'seb') {
-      const tilt = -0.18 * f.facing;
-      sfCtx.rotate(tilt);
-    }
-
-    sfCtx.drawImage(sprite, -drawW / 2, -drawH / 2, drawW, drawH);
-    sfCtx.restore();
-
-    // Subtle shadow on ground beneath fighter — sized relative to figure body width
-    const figureWidthOnScreen = drawW * (meta ? meta.bbox_w_frac : 0.5);
-    if (f.onGround) {
-      sfCtx.fillStyle = 'rgba(0,0,0,0.35)';
-      sfCtx.beginPath();
-      sfCtx.ellipse(f.x, SF_GROUND_Y + 6, Math.max(40, figureWidthOnScreen * 0.5), 9, 0, 0, Math.PI * 2);
-      sfCtx.fill();
-    } else {
-      sfCtx.fillStyle = 'rgba(0,0,0,0.18)';
-      sfCtx.beginPath();
-      sfCtx.ellipse(f.x, SF_GROUND_Y + 6, Math.max(30, figureWidthOnScreen * 0.35), 5, 0, 0, Math.PI * 2);
-      sfCtx.fill();
-    }
-  }
-
-  function sfSpriteMetaFor(f) {
-    const k = sfSpriteKeyFor(f);
-    return sfSpriteMeta[k] || null;
-  }
-
-  function sfSpriteKeyFor(f) {
-    const k = f.char;
-    if (f.action === 'ko') return k + '_still';
-    if (f.action === 'attack') {
-      const move = SF_MOVES[f.attackKey];
-      const spriteKey = k + '_' + move.sprite;
-      if (sfSprites[spriteKey]) return spriteKey;
-      return k + '_jab';
-    }
-    if (f.action === 'jump') return k + '_jump';
-    if (f.action === 'block') return k + '_still';
-    if (f.action === 'hitstun' || f.action === 'blockstun') return k + '_still';
-    if (f.action === 'walk') {
-      const variant = f.walkFrame === 0 ? '_walk_l' : '_walk_r';
-      const wk = k + variant;
-      if (sfSprites[wk]) return wk;
-      return k + '_still';
-    }
-    return k + '_still';
-  }
-
-  // Determine which sprite this fighter should currently render with.
-  function sfSpriteFor(f) {
-    return sfSprites[sfSpriteKeyFor(f)];
-  }
-
-  // Photographed orientation of each sprite source.
-  // Eric photos: he faces RIGHT in most poses; the action sprites (jab, kicks,
-  // uppercut) show his attacking arm/leg extended to the RIGHT.
-  // Seb photos: he faces LEFT in his action poses (jab to the left, kicks to
-  // the left). So Eric's "natural" facing in the source is +1, Seb's is -1.
-  function sfSpriteFacesLeft(f) {
-    return f.char === 'seb';
-  }
-
-  // ---------- Page wiring ----------
-  function openStreetfighter() {
-    if (isWiping) return;
-    closeMenu();
-    runWipe('right', () => {
-      sfPage.classList.add('open');
-      sfPage.setAttribute('aria-hidden', 'false');
-      sfHideAllOverlays();
-      sfHud.setAttribute('aria-hidden', 'true');
-      sfStartOverlay.setAttribute('aria-hidden', 'false');
+    desktop.querySelectorAll('[data-open]').forEach(el => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); open(el.dataset.open, el.closest('.dt-icon') || startBtn); });
     });
-  }
-  function closeStreetfighter() {
-    if (isWiping) return;
-    sfStop();
-    runWipe('left', () => {
-      sfPage.classList.remove('open');
-      sfPage.setAttribute('aria-hidden', 'true');
+
+    // Start menu
+    function closeStart() { startMenu.classList.remove('open'); startBtn.setAttribute('aria-expanded', 'false'); }
+    startBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = startMenu.classList.toggle('open');
+      startBtn.setAttribute('aria-expanded', String(isOpen));
     });
-  }
-  function sfStop() {
-    sfRunning = false;
-    sfRoundActive = false;
-    if (sfRafId) cancelAnimationFrame(sfRafId);
-    sfRafId = null;
-  }
-
-  function sfBeginMode(mode) {
-    sfStartOverlay.setAttribute('aria-hidden', 'true');
-    sfLoadingOverlay.setAttribute('aria-hidden', 'false');
-    sfLoadAssets().then(() => {
-      sfLoadingOverlay.setAttribute('aria-hidden', 'true');
-      sfStartMatch(mode);
+    desktop.addEventListener('click', (e) => { if (!startMenu.contains(e.target)) closeStart(); });
+    document.getElementById('dtShutdown').addEventListener('click', () => {
+      desktop.style.transition = 'filter 500ms ease, opacity 500ms ease';
+      desktop.style.filter = 'brightness(3) contrast(3)';
+      desktop.style.opacity = '0';
+      setTimeout(() => location.reload(), 520);
     });
-  }
 
-  sfBack.addEventListener('click', closeStreetfighter);
-  sfMode1P.addEventListener('click', () => sfBeginMode('cpu'));
-  sfMode2P.addEventListener('click', () => sfBeginMode('2p'));
-  sfRematchBtn.addEventListener('click', () => {
-    sfHideAllOverlays();
-    sfStartMatch(sfMode);
-  });
-  sfChangeModeBtn.addEventListener('click', () => {
-    sfHideAllOverlays();
-    sfHud.setAttribute('aria-hidden', 'true');
-    sfStartOverlay.setAttribute('aria-hidden', 'false');
-  });
+    // welcome.txt: close, minimise to the taskbar, drag by its title bar
+    document.getElementById('dtWelcomeClose').addEventListener('click', () => { welcome.classList.add('closed'); task.hidden = true; });
+    document.getElementById('dtWelcomeMin').addEventListener('click', () => welcome.classList.add('closed'));
+    task.addEventListener('click', () => welcome.classList.toggle('closed'));
+    const bar = document.getElementById('dtWelcomeBar');
+    bar.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button')) return;
+      const r = welcome.getBoundingClientRect();
+      const ox = e.clientX - r.left, oy = e.clientY - r.top;
+      bar.setPointerCapture(e.pointerId);
+      const move = (ev) => {
+        const x = Math.max(0, Math.min(innerWidth - r.width, ev.clientX - ox));
+        const y = Math.max(0, Math.min(innerHeight - 80, ev.clientY - oy));
+        Object.assign(welcome.style, { left: x + 'px', top: y + 'px', right: 'auto', bottom: 'auto' });
+      };
+      const up = () => { bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); };
+      bar.addEventListener('pointermove', move);
+      bar.addEventListener('pointerup', up);
+    });
 
-  // ---------- Leaderboard ----------
-  async function sfFetchLeaderboard() {
-    try {
-      const res = await fetch(SF_LB_ENDPOINT, { method: 'GET' });
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.scores || [];
-    } catch { return []; }
-  }
-
-  async function sfPostLeaderboardEntry(entry) {
-    try {
-      const res = await fetch(SF_LB_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(entry),
-      });
-      const data = await res.json();
-      if (!res.ok) return { ok: false, error: data.error || 'Submission failed' };
-      return { ok: true, scores: data.scores };
-    } catch (err) {
-      return { ok: false, error: 'Network error' };
-    }
-  }
-
-  async function sfShowLeaderboard() {
-    sfLeaderboardOverlay.setAttribute('aria-hidden', 'false');
-    sfLbList.innerHTML = '<li class="sf-lb-empty">loading...</li>';
-    const scores = await sfFetchLeaderboard();
-    sfRenderLeaderboard(scores);
-  }
-
-  function sfRenderLeaderboard(scores) {
-    if (!scores || !scores.length) {
-      sfLbList.innerHTML = '<li class="sf-lb-empty">no wins yet — be the first</li>';
-      return;
-    }
-    sfLbList.innerHTML = scores.slice(0, 50).map((s, i) => {
-      const charLabel = s.character === 'eric' ? 'ERIC' : 'SEB';
-      const modeLabel = s.mode === 'cpu' ? 'vs CPU' : '2P';
-      const time = sfFormatTime(s.matchTime);
-      // Score format like "2-0" or "2-1" — winner has roundsWon, loser has at most roundsWon-1
-      const score = `${s.roundsWon}-${Math.max(0, s.roundsWon - 1)}/${s.roundsWon}`;
-      return `<li>
-        <span class="sf-lb-rank">${i + 1}</span>
-        <span class="sf-lb-name">${sfEscape(s.name)}</span>
-        <span class="sf-lb-meta">${charLabel} &middot; ${modeLabel}</span>
-        <span class="sf-lb-time">${time}</span>
-      </li>`;
-    }).join('');
-  }
-  function sfEscape(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  sfLeaderboardBtn.addEventListener('click', sfShowLeaderboard);
-  sfLbClose.addEventListener('click', () => sfLeaderboardOverlay.setAttribute('aria-hidden', 'true'));
-
-  sfNameForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = sfNameInput.value.trim();
-    if (!name) return;
-    sfSubmitScoreBtn.disabled = true;
-    sfSubmitStatus.textContent = 'submitting...';
-    const winner = sfMatchEndOverlay.dataset.winner;
-    // In 2P mode the player names their winning character; in CPU mode it's always Eric who wins.
-    const character = (sfMode === 'cpu') ? 'eric' : (winner === 'p1' ? 'eric' : 'seb');
-    const entry = {
-      name,
-      mode: sfMode,
-      character,
-      roundsWon: (winner === 'p1' ? sfRoundsWon.p1 : sfRoundsWon.p2),
-      matchTime: Math.round(sfMatchTotalSeconds),
+    // Taskbar clock
+    const tick = () => {
+      clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     };
-    const res = await sfPostLeaderboardEntry(entry);
-    if (res.ok) {
-      sfSubmitStatus.textContent = 'saved!';
-      sfNameForm.style.display = 'none';
-    } else {
-      sfSubmitStatus.textContent = res.error || 'submission failed';
-      sfSubmitScoreBtn.disabled = false;
-    }
-  });
+    tick();
+    setInterval(tick, 15000);
 
-  window.addEventListener('keydown', sfKeydown);
-  window.addEventListener('keyup', sfKeyup);
-
-  // Expose game state on window for debugging / external test scripts. No-op
-  // in production but lets devtools inspect what the engine is doing live.
-  window.__sf = {
-    get p1() { return sfP1; },
-    get p2() { return sfP2; },
-    get roundActive() { return sfRoundActive; },
-    get sprites() { return sfSprites; },
-    get running() { return sfRunning; },
-    get mode() { return sfMode; },
-  };
+    wall.play().catch(() => {});
+    document.getElementById('deskBtn')?.addEventListener('click', () => window.showDesktop());
+  })();
 
   update(0);
 </script>
