@@ -2133,7 +2133,7 @@
     inset: 0;
     z-index: 600;
     overflow: hidden;
-    background: #2a0000;
+    background: #6f87b8;
     font-family: 'Space Mono', monospace;
     color: #f3eee0;
     transition: opacity 350ms ease, visibility 0s linear 0s;
@@ -2145,18 +2145,18 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 30% 58%;
+    image-rendering: pixelated;
     pointer-events: none;
-    filter: saturate(1.25) contrast(1.15);
   }
-  @media (orientation: portrait) { .dt-wall { object-fit: contain; } }
   /* Dither + darkening so icons stay readable on top of the video */
   .dt-wall-tint {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 70% 60% at 50% 45%, transparent 40%, rgba(0,0,0,.45) 100%),
-      repeating-conic-gradient(rgba(0,0,0,.12) 0 25%, transparent 0 50%) 0 0 / 4px 4px;
+      linear-gradient(90deg, rgba(0,0,0,.35), transparent 30%),
+      radial-gradient(ellipse 75% 65% at 50% 45%, transparent 45%, rgba(0,0,0,.4) 100%);
   }
 
   /* Icons */
@@ -2433,6 +2433,82 @@
   }
   @media (max-width: 600px) { .crt-frame { border-radius: 14px; } }
   @media (prefers-reduced-motion: reduce) { .crt-overlay::before { animation: none; } }
+
+  /* ================= CURVED CRT GLASS =================
+     #tube holds the whole site. On capable desktop browsers it is drawn
+     through an SVG barrel-distortion filter so the picture bulges like an
+     old tube; a pixel cursor is drawn *inside* the tube so it bends with
+     the glass too. A beige bezel and a glass reflection sit on top. */
+  #tube {
+    position: fixed;
+    inset: 0;
+    overflow: hidden; /* off-screen pages must not leak into the curve */
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  html.curved, html.curved body { background: #050403; }
+  html.curved #tube { filter: url(#crtBulge); }
+  /* Real cursor is hidden; the drawn one takes over. --cur-hand becomes an
+     invisible image cursor so the script can still tell "clickable" apart. */
+  html.curved {
+    --cur-arrow: none;
+    --cur-hand: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==") 0 0, none;
+  }
+  #fakeCursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 40px;
+    z-index: 99990;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    display: none;
+    will-change: transform;
+  }
+  html.curved #fakeCursor.on { display: block; }
+  html.curved .crt-frame { display: none; }
+
+  .bezel-frame, .glass { display: none; }
+  html.curved .bezel-frame, html.curved .glass { display: block; }
+  /* Beige monitor plastic around the tube */
+  .bezel-frame {
+    position: fixed;
+    inset: 9px;
+    z-index: 99998;
+    pointer-events: none;
+    border-radius: 34px / 40px;
+    box-shadow:
+      0 0 0 80px #cdc3a6,
+      0 0 0 1px #8e8670,
+      inset 0 0 0 2px rgba(0,0,0,.7),
+      inset 0 0 26px 6px rgba(0,0,0,.75);
+  }
+  .bezel-frame::before {
+    /* lamp light on the plastic, darker at the bottom */
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,.18), transparent 12%, transparent 88%, rgba(0,0,0,.22));
+    -webkit-mask: linear-gradient(#000 0 0) top / 100% 9px no-repeat, linear-gradient(#000 0 0) bottom / 100% 9px no-repeat, linear-gradient(#000 0 0) left / 9px 100% no-repeat, linear-gradient(#000 0 0) right / 9px 100% no-repeat;
+            mask: linear-gradient(#000 0 0) top / 100% 9px no-repeat, linear-gradient(#000 0 0) bottom / 100% 9px no-repeat, linear-gradient(#000 0 0) left / 9px 100% no-repeat, linear-gradient(#000 0 0) right / 9px 100% no-repeat;
+  }
+  /* Glass: a soft reflection that drifts against the mouse, plus a darker
+     rim where the tube curves away */
+  .glass {
+    position: fixed;
+    inset: 0;
+    z-index: 99997;
+    pointer-events: none;
+    --gx: 0px;
+    --gy: 0px;
+    background:
+      radial-gradient(ellipse 38% 26% at calc(28% + var(--gx)) calc(16% + var(--gy)), rgba(255,255,255,.085), transparent 70%),
+      radial-gradient(ellipse 90% 85% at 50% 50%, transparent 62%, rgba(0,0,0,.35) 100%);
+    transition: background-position 200ms linear;
+  }
 </style>
 </head>
 <body>
@@ -2494,6 +2570,9 @@
   </div>
 </div>
 
+<!-- Everything on the 'monitor' lives in #tube so it can be curved like CRT glass -->
+<div id="tube">
+
 <header>
   <button class="comments-btn" id="menuBtn" aria-label="Open menu">MENU</button>
   <h1>ERICBUTCOOLER</h1>
@@ -2514,7 +2593,7 @@
 
 <!-- RETRO DESKTOP — first thing after the intro. Roxy = comments, Vincent = games. -->
 <section class="desktop" id="desktop" aria-label="Desktop">
-  <video class="dt-wall" id="dtWall" src="cover.mp4" autoplay loop muted playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-hidden="true"></video>
+  <canvas class="dt-wall" id="dtWall" width="192" height="256" aria-hidden="true"></canvas>
   <div class="dt-wall-tint"></div>
 
   <div class="dt-icons" role="list">
@@ -2552,6 +2631,7 @@
       <button class="dt-sm-item" data-open="games" role="menuitem"><canvas data-face="vincent" width="20" height="20"></canvas>Games</button>
       <div class="dt-sm-item" aria-disabled="true" role="menuitem"><span class="dt-sm-blank"></span>Coming soon</div>
       <div class="dt-sm-sep"></div>
+      <button class="dt-sm-item" id="dtCurveToggle" role="menuitem"><span class="dt-sm-blank" style="border-radius:40%;background:#cdc3a6"></span>Curved glass: ON</button>
       <button class="dt-sm-item" id="dtShutdown" role="menuitem"><span class="dt-sm-blank" style="background:#8a2818;border-color:#3a0f08"></span>Shut down...</button>
     </div>
   </div>
@@ -2826,6 +2906,19 @@
   </div>
   <p class="start-hint" id="startHint">tap face &middot; turn up volume</p>
 </div>
+
+<div id="fakeCursor" aria-hidden="true"></div>
+</div><!-- /#tube -->
+
+<!-- Barrel-distortion filter for the curved glass (map is generated by script) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="crtBulge" x="0" y="0" width="1" height="1" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feImage id="crtBulgeMap" x="0" y="0" width="100" height="100" preserveAspectRatio="none" result="map"/>
+    <feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G" id="crtBulgeDisp"/>
+  </filter>
+</svg>
+<div class="glass" id="glass" aria-hidden="true"></div>
+<div class="bezel-frame" aria-hidden="true"></div>
 
 <script>
   // COVER: video plays, click anywhere → fade out and remove.
@@ -5258,11 +5351,9 @@
 
     function hideDesktop() {
       desktop.classList.add('hidden');
-      setTimeout(() => { if (desktop.classList.contains('hidden')) wall.pause(); }, 400);
     }
     window.showDesktop = function () {
       if (typeof closeMenu === 'function') closeMenu();
-      wall.play().catch(() => {});
       desktop.classList.remove('hidden');
     };
 
@@ -5289,6 +5380,7 @@
       startBtn.setAttribute('aria-expanded', String(isOpen));
     });
     desktop.addEventListener('click', (e) => { if (!startMenu.contains(e.target)) closeStart(); });
+    document.getElementById('dtCurveToggle')?.addEventListener('click', (e) => { e.stopPropagation(); window.toggleCurve?.(); });
     document.getElementById('dtShutdown').addEventListener('click', () => {
       desktop.style.transition = 'filter 500ms ease, opacity 500ms ease';
       desktop.style.filter = 'brightness(3) contrast(3)';
@@ -5323,8 +5415,142 @@
     tick();
     setInterval(tick, 15000);
 
-    wall.play().catch(() => {});
+    // Wallpaper: the rooftop photo, crushed to a 216-colour "web safe"
+    // palette with 4x4 ordered dithering, like a late-90s desktop.
+    const wp = new Image();
+    wp.onload = () => {
+      const w = wall.width, h = wall.height;
+      const ctx = wall.getContext('2d');
+      ctx.drawImage(wp, 0, 0, w, h);
+      const d = ctx.getImageData(0, 0, w, h);
+      const px = d.data;
+      const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          const t = (bayer[(y & 3) * 4 + (x & 3)] + 0.5) / 16 - 0.5;
+          // punchier colours first (old monitors were never subtle)
+          let r = px[i], g = px[i + 1], b = px[i + 2];
+          const l = 0.3 * r + 0.59 * g + 0.11 * b;
+          r = l + (r - l) * 1.35; g = l + (g - l) * 1.35; b = l + (b - l) * 1.35;
+          for (const [k, v] of [[0, r], [1, g], [2, b]]) {
+            const lv = Math.max(0, Math.min(5, Math.round((v / 255) * 5 + t)));
+            px[i + k] = lv * 51;
+          }
+        }
+      }
+      ctx.putImageData(d, 0, 0);
+    };
+    wp.src = 'wallpaper.jpg';
+
     document.getElementById('deskBtn')?.addEventListener('click', () => window.showDesktop());
+  })();
+
+  // ================= CURVED CRT GLASS =================
+  (() => {
+    const root = document.documentElement;
+    const mapEl = document.getElementById('crtBulgeMap');
+    const disp = document.getElementById('crtBulgeDisp');
+    const cur = document.getElementById('fakeCursor');
+    const glass = document.getElementById('glass');
+    if (!mapEl || !disp || !cur) return;
+
+    // Only where SVG filters on HTML are reliable and there is a real mouse.
+    const ua = navigator.userAgent;
+    const isSafari = /Safari/.test(ua) && !/Chrome|Chromium|Edg|Firefox|CriOS|FxiOS/.test(ua);
+    const capable = matchMedia('(hover: hover) and (pointer: fine)').matches && !isSafari;
+    let pref = 'on';
+    try { pref = localStorage.getItem('ebc-curve') || 'on'; } catch (e) {}
+
+    const K = 0.042; // bulge strength
+    function buildMap() {
+      const W = innerWidth, H = innerHeight;
+      const hw = W / 2, hh = H / 2;
+      const S = 4 * K * Math.max(hw, hh); // displacement range in px
+      const N = 256;
+      const c = document.createElement('canvas');
+      c.width = c.height = N;
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(N, N);
+      for (let j = 0; j < N; j++) {
+        const yn = (j + 0.5) / (N / 2) - 1;
+        for (let i = 0; i < N; i++) {
+          const xn = (i + 0.5) / (N / 2) - 1;
+          const r2 = xn * xn + yn * yn;
+          // sample further out than we draw -> picture bulges, edges curve away
+          const dx = K * xn * r2 * hw, dy = K * yn * r2 * hh;
+          const o = (j * N + i) * 4;
+          img.data[o] = Math.round((0.5 + dx / S) * 255);
+          img.data[o + 1] = Math.round((0.5 + dy / S) * 255);
+          img.data[o + 2] = 128;
+          img.data[o + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      const url = c.toDataURL();
+      mapEl.setAttribute('href', url);
+      mapEl.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', url);
+      mapEl.setAttribute('width', W);
+      mapEl.setAttribute('height', H);
+      disp.setAttribute('scale', S);
+    }
+
+    // The drawn cursor uses the same pixel art as the normal cursors.
+    const imgOf = (v) => (getComputedStyle(root).getPropertyValue(v).match(/url\(".*?"\)/) || [''])[0];
+    let arrowImg = '', handImg = '';
+
+    function setCurved(on) {
+      if (on) {
+        root.classList.remove('curved');
+        arrowImg = imgOf('--cur-arrow');
+        handImg = imgOf('--cur-hand');
+        buildMap();
+        root.classList.add('curved');
+      } else {
+        root.classList.remove('curved');
+      }
+      const item = document.getElementById('dtCurveToggle');
+      if (item) item.lastChild.textContent = 'Curved glass: ' + (on ? 'ON' : 'OFF');
+    }
+    window.toggleCurve = function () {
+      const on = !root.classList.contains('curved');
+      try { localStorage.setItem('ebc-curve', on ? 'on' : 'off'); } catch (e) {}
+      setCurved(on);
+    };
+
+    let mode = '';
+    document.addEventListener('mousemove', (e) => {
+      if (!root.classList.contains('curved')) return;
+      if (glass) {
+        glass.style.setProperty('--gx', (e.clientX / innerWidth - .5) * -40 + 'px');
+        glass.style.setProperty('--gy', (e.clientY / innerHeight - .5) * -30 + 'px');
+      }
+      if (document.pointerLockElement) { cur.classList.remove('on'); return; }
+      const t = e.target instanceof Element ? e.target : null;
+      const cs = t ? getComputedStyle(t).cursor : 'none';
+      let next;
+      if (t && t.closest('#cover, .carrying-soap, .carrying-shower')) next = '';
+      else if (cs.includes('url(')) next = 'hand';
+      else if (cs === 'none') next = 'arrow';
+      else next = ''; // native cursor (text, crosshair, resize) shows by itself
+      if (next !== mode) {
+        mode = next;
+        cur.style.backgroundImage = mode === 'hand' ? handImg : arrowImg;
+      }
+      cur.classList.toggle('on', !!mode);
+      const hx = mode === 'hand' ? 10 : 0;
+      cur.style.transform = 'translate3d(' + (e.clientX - hx) + 'px,' + e.clientY + 'px,0)';
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => cur.classList.remove('on'));
+
+    let rt;
+    addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => { if (root.classList.contains('curved')) buildMap(); }, 150);
+    });
+
+    if (capable) setCurved(pref !== 'off');
+    else document.getElementById('dtCurveToggle')?.remove();
   })();
 
   update(0);
