@@ -2251,54 +2251,6 @@
     box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea, inset 2px 2px 0 #8e8670;
   }
 
-  /* welcome.txt window */
-  .dt-window {
-    position: absolute;
-    top: 14%;
-    right: 7%;
-    width: min(380px, calc(100vw - 32px));
-    padding: 3px;
-    z-index: 2;
-  }
-  .dt-window.closed { display: none; }
-  .dt-titlebar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    height: 24px;
-    padding: 0 3px 0 8px;
-    background: linear-gradient(90deg, #8a2818, #c2552f);
-    color: #fff;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 17px;
-    letter-spacing: .06em;
-    cursor: var(--cur-arrow);
-    touch-action: none;
-  }
-  .dt-titlebar span { flex: 1; }
-  .dt-winbtn {
-    all: unset;
-    width: 18px;
-    height: 16px;
-    display: grid;
-    place-items: center;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: var(--cur-hand);
-  }
-  .dt-winbtn:active { box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea; }
-  .dt-winbody {
-    margin-top: 3px;
-    padding: 12px 14px;
-    background: #fbf7ec;
-    color: #2a2218;
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .dt-winbody p + p { margin-top: 8px; }
-  .dt-winbody b { color: #8a2818; }
-
   /* Taskbar */
   .dt-taskbar {
     position: absolute;
@@ -2406,8 +2358,6 @@
   @media (max-width: 600px) {
     .dt-icons { grid-template-rows: repeat(auto-fill, 108px); grid-auto-columns: 92px; top: 12px; left: 8px; }
     .dt-icon { width: 92px; height: 108px; }
-    .dt-window { top: auto; bottom: 56px; right: 16px; }
-    .dt-task { display: none; }
   }
 
   /* ================= CRT TUBE OVER EVERYTHING =================
@@ -2526,6 +2476,91 @@
       radial-gradient(ellipse 90% 85% at 50% 50%, transparent 62%, rgba(0,0,0,.35) 100%);
     transition: background-position 200ms linear;
   }
+
+  /* ================= DESKTOP HELPER =================
+     A hand-drawn little guy (sprite sheet cut from a FlipaClip animation)
+     who pops in, waves while his speech balloon types out, and melts into a
+     skeleton when dismissed. 78 frames at 12fps, 264x213 each, 13 per row. */
+  .hp {
+    position: absolute;
+    right: 34px;
+    bottom: 40px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    pointer-events: none;
+    transform-origin: 100% 100%;
+  }
+  .hp[hidden] { display: none; }
+  .hp-sprite {
+    width: 264px;
+    height: 213px;
+    background: url('helper.webp') 0 0 / 3432px 1278px no-repeat;
+    pointer-events: auto;
+    cursor: var(--cur-hand);
+  }
+  .hp-bubble {
+    position: relative;
+    width: 290px;
+    margin: 0 -6px -18px 0;
+    padding: 12px 14px 10px;
+    background: #ffffe1;
+    color: #000;
+    border: 1px solid #000;
+    border-radius: 12px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,.35);
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.5;
+    pointer-events: auto;
+    animation: hpPop 160ms steps(3) both;
+  }
+  .hp-bubble[hidden] { display: none; }
+  /* balloon tail pointing down at his head */
+  .hp-bubble::before, .hp-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 150px;
+    border-style: solid;
+  }
+  .hp-bubble::before { border-width: 16px 4px 0 14px; border-color: #000 transparent transparent; }
+  .hp-bubble::after { left: 151px; margin-top: -1px; border-width: 14px 3px 0 12px; border-color: #ffffe1 transparent transparent; }
+  .hp-text { min-height: 3em; padding-right: 12px; }
+  .hp-text b { color: #8a2818; }
+  .hp-caret { animation: blink 1s steps(1) infinite; }
+  .hp-x {
+    all: unset;
+    position: absolute;
+    top: 4px;
+    right: 7px;
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    line-height: 1;
+    cursor: var(--cur-hand);
+  }
+  .hp-x:hover { color: #8a2818; }
+  .hp-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-top: 8px; }
+  .hp-btn {
+    all: unset;
+    padding: 3px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11.5px;
+    color: #1d1a14;
+    background: #d8d0b8;
+    box-shadow: inset 1px 1px 0 #fffaea, inset -1px -1px 0 #5f5845, inset 2px 2px 0 #efe8d2, inset -2px -2px 0 #8e8670;
+    cursor: var(--cur-hand);
+  }
+  .hp-btn:hover, .hp-btn:focus-visible { background: #e6dfc9; }
+  .hp-btn:active { box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea; }
+  @keyframes hpPop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @media (max-width: 600px) {
+    .hp { right: 18px; transform: scale(.78); }
+  }
 </style>
 </head>
 <body>
@@ -2628,17 +2663,14 @@
     </div>
   </div>
 
-  <div class="dt-window bevel" id="dtWelcome" role="dialog" aria-label="welcome.txt">
-    <div class="dt-titlebar" id="dtWelcomeBar">
-      <span>WELCOME.TXT</span>
-      <button class="dt-winbtn bevel" id="dtWelcomeMin" aria-label="Minimise">_</button>
-      <button class="dt-winbtn bevel" id="dtWelcomeClose" aria-label="Close">&times;</button>
+  <!-- Helper: a little guy who explains the desktop -->
+  <div class="hp" id="helper" hidden>
+    <div class="hp-bubble" id="hpBubble" role="dialog" aria-label="Helper" aria-live="polite" hidden>
+      <button class="hp-x" id="hpClose" aria-label="Close helper">&times;</button>
+      <p class="hp-text" id="hpText"></p>
+      <div class="hp-actions" id="hpActions"></div>
     </div>
-    <div class="dt-winbody bevel-in">
-      <p>welcome to <b>ericbutcooler</b>.</p>
-      <p>click <b>roxy</b> to read and leave comments.<br>click <b>vincent</b> for the games and everything else.</p>
-      <p>more coming soon.</p>
-    </div>
+    <div class="hp-sprite" id="hpSprite" role="img" aria-label="A little hand-drawn guy waving"></div>
   </div>
 
   <div class="dt-startmenu bevel" id="dtStartMenu" role="menu">
@@ -2647,6 +2679,7 @@
       <button class="dt-sm-item" data-open="comments" role="menuitem"><canvas data-face="roxy" width="20" height="20"></canvas>Comments</button>
       <button class="dt-sm-item" data-open="games" role="menuitem"><canvas data-face="vincent" width="20" height="20"></canvas>Games</button>
       <div class="dt-sm-item" aria-disabled="true" role="menuitem"><span class="dt-sm-blank"></span>Coming soon</div>
+      <button class="dt-sm-item" id="dtHelperItem" role="menuitem"><span class="dt-sm-blank" style="background:#ffffe1;border-color:#000;border-radius:6px"></span>Helper</button>
       <div class="dt-sm-sep"></div>
       <button class="dt-sm-item" id="dtCurveToggle" role="menuitem"><span class="dt-sm-blank" style="border-radius:40%;background:#cdc3a6"></span>Curved glass: ON</button>
       <button class="dt-sm-item" id="dtShutdown" role="menuitem"><span class="dt-sm-blank" style="background:#8a2818;border-color:#3a0f08"></span>Shut down...</button>
@@ -2655,7 +2688,6 @@
 
   <div class="dt-taskbar bevel">
     <button class="dt-start bevel" id="dtStart" aria-haspopup="menu" aria-expanded="false"><canvas data-face="vincent" width="12" height="12"></canvas>START</button>
-    <button class="dt-task bevel-in" id="dtTask">welcome.txt</button>
     <div class="dt-tray bevel-in"><span id="dtClock">--:--</span></div>
   </div>
 
@@ -2977,6 +3009,7 @@
       setTimeout(() => {
         if (v) { try { v.pause(); } catch (e) {} }
         cover.remove();
+        dispatchEvent(new Event('ebc-entered'));
       }, 1700);
     }
     // Subtle camera sway that follows the mouse, so the room feels 3D.
@@ -5327,8 +5360,6 @@
     const zoom = document.getElementById('dtZoom');
     const startBtn = document.getElementById('dtStart');
     const startMenu = document.getElementById('dtStartMenu');
-    const welcome = document.getElementById('dtWelcome');
-    const task = document.getElementById('dtTask');
     const clock = document.getElementById('dtClock');
 
     // Pixel-art icons: shrink the game portraits onto tiny canvases and
@@ -5405,25 +5436,92 @@
       setTimeout(() => location.reload(), 520);
     });
 
-    // welcome.txt: close, minimise to the taskbar, drag by its title bar
-    document.getElementById('dtWelcomeClose').addEventListener('click', () => { welcome.classList.add('closed'); task.hidden = true; });
-    document.getElementById('dtWelcomeMin').addEventListener('click', () => welcome.classList.add('closed'));
-    task.addEventListener('click', () => welcome.classList.toggle('closed'));
-    const bar = document.getElementById('dtWelcomeBar');
-    bar.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('button')) return;
-      const r = welcome.getBoundingClientRect();
-      const ox = e.clientX - r.left, oy = e.clientY - r.top;
-      bar.setPointerCapture(e.pointerId);
-      const move = (ev) => {
-        const x = Math.max(0, Math.min(innerWidth - r.width, ev.clientX - ox));
-        const y = Math.max(0, Math.min(innerHeight - 80, ev.clientY - oy));
-        Object.assign(welcome.style, { left: x + 'px', top: y + 'px', right: 'auto', bottom: 'auto' });
+    // ---------- Helper ----------
+    const helper = document.getElementById('helper');
+    const hpSprite = document.getElementById('hpSprite');
+    const hpBubble = document.getElementById('hpBubble');
+    const hpText = document.getElementById('hpText');
+    const hpActions = document.getElementById('hpActions');
+    const FW = 264, FH = 213, COLS = 13, LAST = 77;
+    const INTRO = [0, 19], WAVE = [20, 57], OUTRO = [58, 77];
+    const frameMs = (f) => (f === LAST ? 333 : 83); // original 12fps timing, last frame held
+    const PAGES = [
+      { text: 'Hi! Welcome to *ericbutcooler*.' },
+      { text: 'Click *Roxy* to read the comments and leave your own.' },
+      { text: 'Click *Vincent* for the games and everything else.' },
+      { text: "There's more coming soon. What do you want to do?",
+        choices: [['Comments', 'comments'], ['Games', 'games'], ['Go away', 'bye']] },
+    ];
+    new Image().src = 'helper.webp'; // preload
+
+    let frame = 0, phase = 'off', timer = 0, page = 0, typing = 0;
+    function draw(f) {
+      hpSprite.style.backgroundPosition = -(f % COLS) * FW + 'px ' + -Math.floor(f / COLS) * FH + 'px';
+    }
+    function step() {
+      draw(frame);
+      const wait = frameMs(frame);
+      if (phase === 'intro' && frame === INTRO[1]) { phase = 'wave'; showPage(0); frame = WAVE[0]; }
+      else if (phase === 'wave' && frame === WAVE[1]) frame = WAVE[0];      // repeat the wave while talking
+      else if (phase === 'outro' && frame === OUTRO[1]) { timer = setTimeout(() => { helper.hidden = true; phase = 'off'; }, wait); return; }
+      else frame++;
+      timer = setTimeout(step, wait);
+    }
+    function startHelper() {
+      clearTimeout(timer); clearInterval(typing);
+      helper.hidden = false; hpBubble.hidden = true;
+      phase = 'intro'; frame = INTRO[0]; page = 0;
+      step();
+    }
+    function dismissHelper() {
+      if (phase === 'off' || phase === 'outro') return;
+      clearTimeout(timer); clearInterval(typing);
+      hpBubble.hidden = true;
+      phase = 'outro'; frame = OUTRO[0];
+      step();
+    }
+    const fmt = (t) => t.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\*(.+?)\*/g, '<b>$1</b>');
+    function showPage(i) {
+      page = i;
+      const p = PAGES[i];
+      const plain = p.text.replace(/\*/g, '');
+      hpBubble.hidden = false;
+      hpActions.innerHTML = '';
+      clearInterval(typing);
+      let n = 0;
+      const finish = () => {
+        clearInterval(typing); typing = 0;
+        hpText.innerHTML = fmt(p.text);
+        const btns = p.choices || [['Next ›', 'next']];
+        for (const [label, act] of btns) {
+          const b = document.createElement('button');
+          b.className = 'hp-btn'; b.textContent = label;
+          b.addEventListener('click', (e) => { e.stopPropagation(); choose(act); });
+          hpActions.appendChild(b);
+        }
       };
-      const up = () => { bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); };
-      bar.addEventListener('pointermove', move);
-      bar.addEventListener('pointerup', up);
+      hpBubble.onclick = (e) => { if (typing && !e.target.closest('button')) finish(); }; // click to skip typing
+      typing = setInterval(() => {
+        n += 1;
+        hpText.innerHTML = fmt(plain.slice(0, n)) + '<span class="hp-caret">_</span>';
+        if (n >= plain.length) finish();
+      }, 32);
+    }
+    function choose(act) {
+      if (act === 'next') showPage(Math.min(page + 1, PAGES.length - 1));
+      else if (act === 'bye') dismissHelper();
+      else { hpBubble.hidden = true; open(act, null); }
+    }
+    document.getElementById('hpClose').addEventListener('click', (e) => { e.stopPropagation(); dismissHelper(); });
+    hpSprite.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (phase === 'wave') { if (hpBubble.hidden) showPage(page); else hpBubble.hidden = true; }
     });
+    document.getElementById('dtHelperItem').addEventListener('click', (e) => { e.stopPropagation(); closeStart(); startHelper(); });
+    // Pop in once the intro has zoomed into the screen
+    let greeted = false;
+    addEventListener('ebc-entered', () => { if (!greeted) { greeted = true; setTimeout(startHelper, 350); } });
+    if (!document.getElementById('cover')) { greeted = true; setTimeout(startHelper, 600); }
 
     // Taskbar clock
     const tick = () => {
