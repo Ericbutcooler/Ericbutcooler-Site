@@ -2177,16 +2177,16 @@
     bottom: 56px;
     display: grid;
     grid-auto-flow: column;
-    grid-template-rows: repeat(auto-fill, 118px);
-    grid-auto-columns: 104px;
+    grid-template-rows: repeat(auto-fill, 156px);
+    grid-auto-columns: 140px;
     gap: 6px 10px;
     align-content: start;
   }
   .dt-icon {
     all: unset;
     box-sizing: border-box;
-    width: 104px;
-    height: 118px;
+    width: 140px;
+    height: 156px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2196,20 +2196,20 @@
     -webkit-tap-highlight-color: transparent;
   }
   .dt-ico {
-    width: 76px;
-    height: 76px;
+    width: 108px;
+    height: 108px;
     display: grid;
     place-items: center;
     position: relative;
   }
   .dt-ico canvas {
-    width: 76px;
-    height: 76px;
+    width: 108px;
+    height: 108px;
     image-rendering: pixelated;
     filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55));
   }
   .dt-label {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.25;
     padding: 1px 4px;
     text-align: center;
@@ -2232,7 +2232,7 @@
     border: 2px dashed rgba(243, 238, 224, .35);
     background: rgba(0, 0, 0, .55);
     box-shadow: inset 0 0 14px rgba(0,0,0,.9);
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: .14em;
     text-align: center;
     line-height: 1.5;
@@ -2356,8 +2356,9 @@
   @media (max-width: 600px) { .comments-btn.desk-btn { right: 10px; } }
 
   @media (max-width: 600px) {
-    .dt-icons { grid-template-rows: repeat(auto-fill, 108px); grid-auto-columns: 92px; top: 12px; left: 8px; }
-    .dt-icon { width: 92px; height: 108px; }
+    .dt-icons { grid-template-rows: repeat(auto-fill, 134px); grid-auto-columns: 112px; top: 12px; left: 8px; }
+    .dt-icon { width: 112px; height: 134px; }
+    .dt-ico, .dt-ico canvas { width: 88px; height: 88px; }
   }
 
   /* ================= CRT TUBE OVER EVERYTHING =================
@@ -2491,6 +2492,7 @@
     align-items: flex-end;
     pointer-events: none;
     transform-origin: 100% 100%;
+    transform: scale(1.4);
   }
   .hp[hidden] { display: none; }
   .hp-sprite {
@@ -2559,7 +2561,7 @@
   .hp-btn:active { box-shadow: inset 1px 1px 0 #5f5845, inset -1px -1px 0 #fffaea; }
   @keyframes hpPop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   @media (max-width: 600px) {
-    .hp { right: 18px; transform: scale(.78); }
+    .hp { right: 14px; transform: scale(1.05); }
   }
 
   /* ================= DOOMBUTCOOLER: PHONES + TRACKPADS =================
@@ -2666,6 +2668,107 @@
     .dm-big { font-size: 40px !important; }
     .dm-overlay { gap: 8px !important; padding: 10px !important; }
   }
+  /* ================= SNUS' LUIS ================= */
+  .snus-page {
+    /* reuses the Roxy overlay/leaderboard classes, which read these vars */
+    --rx-bg: #1d3557;
+    --rx-bg-2: #10203a;
+    --rx-ink: #f4efe2;
+    --rx-water: #a8e05f;
+    --rx-accent: #ffd166;
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 35%, rgba(255,255,255,.10) 0 18%, transparent 18.4%),
+      radial-gradient(circle at 50% 35%, transparent 0 27%, rgba(255,255,255,.06) 27.4% 28.4%, transparent 28.8%),
+      radial-gradient(ellipse at 50% 120%, #2c4c7a, var(--rx-bg) 60%);
+    color: var(--rx-ink);
+    z-index: 800;
+    transform: translateX(100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .snus-page.open { transform: translateX(0); }
+  .sn-hud {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 24px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: .08em;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    position: relative;
+    z-index: 2;
+  }
+  .sn-hud b { color: var(--rx-water); font-weight: 400; display: inline-block; min-width: 2.2ch; }
+  .sn-hud-time.low b { color: #ff5a4e; animation: blink .5s steps(1) infinite; }
+  .sn-hud b.bump { animation: snBump 260ms ease-out; }
+  @keyframes snBump { 40% { transform: scale(1.5); } }
+  .sn-arena {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: var(--cur-arrow);
+  }
+  .sn-luis {
+    position: absolute;
+    left: 0; top: 0;
+    will-change: transform;
+    pointer-events: none;
+  }
+  .sn-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    -webkit-mask-image: linear-gradient(#000 78%, transparent 97%);
+    mask-image: linear-gradient(#000 78%, transparent 97%);
+  }
+  .sn-face.is-on { visibility: visible; }
+  .sn-hand {
+    position: absolute;
+    pointer-events: none;
+    transform-origin: 80% 100%;
+    transition: transform 120ms ease-out;
+    filter: drop-shadow(-6px 8px 14px rgba(0,0,0,.4));
+  }
+  .sn-hand.flick { transform: rotate(-7deg) translate(-2%, -3%); }
+  .sn-fx { position: absolute; inset: 0; pointer-events: none; }
+  .sn-pouch {
+    position: absolute;
+    left: 0; top: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .sn-ring {
+    position: absolute;
+    width: 26px; height: 26px;
+    margin: -13px 0 0 -13px;
+    border: 2px dashed rgba(255,255,255,.7);
+    border-radius: 50%;
+    animation: snRing 450ms ease-out forwards;
+  }
+  @keyframes snRing { from { transform: scale(1.6); opacity: 1; } to { transform: scale(.5); opacity: 0; } }
+  .sn-pop {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--rx-water);
+    text-shadow: 2px 2px 0 #000;
+    transform: translate(-50%, -50%);
+    animation: snPop 700ms ease-out forwards;
+  }
+  .sn-pop.miss { color: #ff5a4e; font-size: 30px; }
+  @keyframes snPop { from { opacity: 1; margin-top: 0; } to { opacity: 0; margin-top: -60px; } }
+  .sn-how { text-align: center; line-height: 1.9; max-width: 90vw; text-transform: none; letter-spacing: .06em; }
+  #snFinalScore { color: var(--rx-water); font-weight: 700; }
+  .snus-page .rx-score { text-align: center; line-height: 1.8; padding: 0 16px; }
+  @media (max-width: 600px) { .sn-hud { padding: 8px 16px; font-size: 22px; } }
 </style>
 </head>
 <body>
@@ -2827,6 +2930,7 @@
     <button class="menu-item" data-target="vincent">BEAT UP VINCENT</button>
     <button class="menu-item" data-target="roxy">SHOWERING ROXY</button>
     <button class="menu-item" data-target="doom">DOOMBUTCOOLER</button>
+    <button class="menu-item" data-target="snus">SNUS' LUIS</button>
     <button class="menu-close" id="menuClose" aria-label="Close menu">CLOSE</button>
   </div>
 </div>
@@ -3062,6 +3166,54 @@
       <div class="dm-lb-list" id="dmLbList"></div>
       <button class="dm-start-btn dm-replay-secondary" id="dmLbClose">CLOSE</button>
     </div>
+  </div>
+</section>
+
+<!-- Snus' Luis — throw pouches into Luis's gum before the 40s run out -->
+<section class="snus-page" id="snusPage" aria-hidden="true">
+  <header class="rx-header">
+    <button class="rx-back" id="snBack" aria-label="Back">&larr; BACK</button>
+    <h2 class="rx-title">SNUS' LUIS</h2>
+    <button class="rx-leaderboard-btn" id="snLeaderboardBtn">LEADERBOARD</button>
+  </header>
+
+  <div class="sn-hud">
+    <span class="sn-hud-item">SNUS <b id="snScore">0</b></span>
+    <span class="sn-hud-item sn-hud-time">TIME <b id="snTime">40.0</b></span>
+  </div>
+
+  <div class="sn-arena" id="snArena">
+    <div class="sn-luis" id="snLuis">
+      <img class="sn-face is-on" id="snFaceBase" src="snus/luis.webp" alt="Luis holding his gum up" draggable="false">
+      <img class="sn-face" id="snFaceSad" src="snus/luis-sad.webp" alt="" draggable="false">
+      <img class="sn-face" id="snFaceHappy" src="snus/luis-happy.webp" alt="" draggable="false">
+    </div>
+    <div class="sn-fx" id="snFx"></div>
+    <img class="sn-hand" id="snHand" src="snus/hand.webp" alt="" draggable="false">
+  </div>
+
+  <div class="rx-overlay show" id="snStartOverlay">
+    <h2 class="rx-win">SNUS' LUIS</h2>
+    <p class="rx-score sn-how">click or tap to throw a pouch where you aim<br>get as many in his gum as you can in 40 seconds<br>he won't stay still, so lead your throws</p>
+    <button class="rx-replay" id="snStartBtn">START</button>
+  </div>
+
+  <div class="rx-overlay" id="snEndOverlay" aria-hidden="true">
+    <h2 class="rx-win">TIME'S UP</h2>
+    <p class="rx-score"><span id="snFinalScore">0</span> snus in luis's gum<br><span id="snFinalAcc">0</span>% accuracy</p>
+    <form class="rx-name-form" id="snNameForm" autocomplete="off">
+      <input class="rx-name-input" id="snNameInput" type="text" placeholder="your name" maxlength="20" required>
+      <button class="rx-replay" type="submit" id="snSubmitScore">SUBMIT SCORE</button>
+    </form>
+    <p class="rx-submit-status" id="snSubmitStatus"></p>
+    <button class="rx-replay-secondary" id="snReplay">PLAY AGAIN</button>
+  </div>
+
+  <div class="rx-overlay rx-leaderboard" id="snLeaderboardOverlay" aria-hidden="true">
+    <h2 class="rx-win rx-lb-title">LEADERBOARD</h2>
+    <p class="rx-score">most snus in 40 seconds</p>
+    <div class="rx-lb-list" id="snLbList"></div>
+    <button class="rx-replay-secondary" id="snLbClose">CLOSE</button>
   </div>
 </section>
 
@@ -3618,6 +3770,7 @@
       else if (target === 'vincent') openVincent();
       else if (target === 'roxy') openRoxy();
       else if (target === 'doom') openDoom();
+      else if (target === 'snus') openSnus();
     });
   });
 
@@ -5563,6 +5716,398 @@
   // Initial load + polling
   fetchAndRenderComments(false);
   setInterval(() => fetchAndRenderComments(true), POLL_INTERVAL_MS);
+
+
+  // ================= SNUS' LUIS =================
+  // Luis wanders around holding his gum up. Click/tap throws a pouch from
+  // your hand toward that spot; it takes a moment to fly, so you have to
+  // lead him. Land it in his gum before the 40 seconds run out.
+  const snPage = document.getElementById('snusPage');
+  const snArena = document.getElementById('snArena');
+  const snLuis = document.getElementById('snLuis');
+  const snHand = document.getElementById('snHand');
+  const snFx = document.getElementById('snFx');
+  const snFaces = {
+    base: document.getElementById('snFaceBase'),
+    sad: document.getElementById('snFaceSad'),
+    happy: document.getElementById('snFaceHappy'),
+  };
+  const snScoreEl = document.getElementById('snScore');
+  const snTimeEl = document.getElementById('snTime');
+  const snStartOverlay = document.getElementById('snStartOverlay');
+  const snEndOverlay = document.getElementById('snEndOverlay');
+  const snLbOverlay = document.getElementById('snLeaderboardOverlay');
+  const snLbList = document.getElementById('snLbList');
+  const snNameForm = document.getElementById('snNameForm');
+  const snNameInput = document.getElementById('snNameInput');
+  const snSubmitBtn = document.getElementById('snSubmitScore');
+  const snSubmitStatus = document.getElementById('snSubmitStatus');
+  const SN_LB_ENDPOINT = '/api/leaderboard-snus';
+  const SN_ROUND = 40;
+  const SN_HAND_SRC = 'snus/hand.webp', SN_HAND_OPEN_SRC = 'snus/hand-open.webp';
+  // Where things sit inside the sprites (fractions of the image box)
+  const SN_LUIS_RATIO = 562 / 635;     // width / height
+  const SN_MOUTH = { x: 0.50, y: 0.61 };
+  const SN_HAND_RATIO = 482 / 711;
+  const SN_FINGERS = { x: 0.12, y: 0.09 };
+  ['snus/luis-sad.webp', 'snus/luis-happy.webp', SN_HAND_OPEN_SRC, 'snus/pouch.webp'].forEach(s => { new Image().src = s; });
+
+  const sn = {
+    running: false, raf: 0, last: 0, timeLeft: SN_ROUND, score: 0, throws: 0,
+    W: 0, H: 0, lw: 0, lh: 0, hand: null,
+    x: 0, y: 0, tx: 0, pause: 0, t: 0,
+    cool: 0, faceTimer: 0, pouches: [], lastSubmitted: null,
+  };
+
+  function snLayout() {
+    const r = snArena.getBoundingClientRect();
+    sn.W = r.width; sn.H = r.height;
+    sn.lh = Math.min(sn.H * 0.52, (sn.W * 0.6) / SN_LUIS_RATIO);
+    sn.lw = sn.lh * SN_LUIS_RATIO;
+    snLuis.style.width = sn.lw + 'px';
+    snLuis.style.height = sn.lh + 'px';
+    const hh = Math.min(sn.H * 0.7, sn.W * 0.85 / SN_HAND_RATIO);
+    const hw = hh * SN_HAND_RATIO;
+    const hx = sn.W - hw - Math.min(sn.W * 0.04, 40);
+    const hy = sn.H - hh * 0.72;
+    Object.assign(snHand.style, { width: hw + 'px', height: hh + 'px', left: hx + 'px', top: hy + 'px' });
+    sn.hand = { x: hx + hw * SN_FINGERS.x, y: hy + hh * SN_FINGERS.y, h: hh };
+    // keep Luis on screen after a resize
+    const m = snMargin();
+    sn.x = Math.min(Math.max(sn.x || sn.W / 2, m), sn.W - m);
+    sn.tx = Math.min(Math.max(sn.tx || sn.x, m), sn.W - m);
+  }
+  const snMargin = () => Math.max(30, sn.lw * 0.22);
+  // mouth position in arena coordinates
+  const snMouth = () => ({ x: sn.x, y: sn.y + sn.lh * SN_MOUTH.y });
+
+  function snDrawLuis() {
+    snLuis.style.transform = 'translate(' + (sn.x - sn.lw / 2) + 'px,' + sn.y + 'px)';
+  }
+
+  function snFace(which, ms) {
+    for (const k in snFaces) snFaces[k].classList.toggle('is-on', k === which);
+    clearTimeout(sn.faceTimer);
+    if (ms) sn.faceTimer = setTimeout(() => snFace('base'), ms);
+  }
+
+  // Luis gets faster and twitchier as the clock runs down.
+  function snMoveLuis(dt) {
+    const p = 1 - sn.timeLeft / SN_ROUND;               // 0 -> 1 over the round
+    const speed = (130 + 420 * p) * Math.max(0.55, Math.min(1.2, sn.W / 900));
+    if (sn.pause > 0) sn.pause -= dt;
+    else {
+      const d = sn.tx - sn.x;
+      const step = Math.sign(d) * Math.min(Math.abs(d), speed * dt);
+      sn.x += step;
+      if (Math.abs(d) < 2) {
+        const m = snMargin();
+        // pick a new spot; later in the round he jumps further and pauses less
+        const reach = (0.25 + 0.6 * p) * (sn.W - 2 * m);
+        let nx = sn.x + (Math.random() < 0.5 ? -1 : 1) * (reach * (0.4 + Math.random() * 0.6));
+        if (nx < m || nx > sn.W - m) nx = sn.x - (nx - sn.x);
+        sn.tx = Math.min(Math.max(nx, m), sn.W - m);
+        sn.pause = Math.random() < 0.6 - 0.45 * p ? 0.15 + Math.random() * 0.5 * (1 - p) : 0;
+      }
+    }
+    // bob up and down, more as time goes on
+    sn.t += dt;
+    const top = sn.H * 0.03;
+    const room = Math.max(0, Math.min(sn.H * 0.12, sn.H * 0.75 - sn.lh - top));
+    sn.y = top + room * (0.5 + 0.5 * Math.sin(sn.t * (1.6 + 1.8 * p)));
+  }
+
+  function snThrow(e) {
+    if (!sn.running || sn.cool > 0) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
+    const r = snArena.getBoundingClientRect();
+    const tx = e.clientX - r.left, ty = e.clientY - r.top;
+    sn.cool = 0.28;
+    sn.throws++;
+    // hand lets go
+    snHand.src = SN_HAND_OPEN_SRC;
+    snHand.classList.add('flick');
+    setTimeout(() => { snHand.classList.remove('flick'); }, 130);
+    setTimeout(() => { if (sn.running) snHand.src = SN_HAND_SRC; }, 240);
+    // aim marker
+    const ring = document.createElement('div');
+    ring.className = 'sn-ring';
+    ring.style.left = tx + 'px'; ring.style.top = ty + 'px';
+    snFx.appendChild(ring);
+    setTimeout(() => ring.remove(), 460);
+
+    const el = document.createElement('img');
+    el.className = 'sn-pouch';
+    el.src = 'snus/pouch.webp';
+    el.alt = '';
+    snFx.appendChild(el);
+    const x0 = sn.hand.x, y0 = sn.hand.y;
+    const dist = Math.hypot(tx - x0, ty - y0);
+    sn.pouches.push({
+      el, x0, y0, tx, ty, t: 0,
+      dur: 0.34 + dist / 2600,
+      arc: Math.min(sn.H * 0.2, 40 + dist * 0.25),
+      h0: Math.max(30, sn.hand.h * 0.11),
+      h1: Math.max(16, sn.lh * 0.1),
+      rot: (Math.random() * 40 - 20), spin: 540 + Math.random() * 360,
+      state: 'fly', vx: 0, vy: 0, x: x0, y: y0, h: 0, a: 1,
+    });
+    snSfx('throw');
+  }
+
+  function snPlacePouch(p) {
+    const w = p.h * (330 / 520);
+    p.el.style.width = w + 'px';
+    p.el.style.height = p.h + 'px';
+    p.el.style.opacity = p.a;
+    p.el.style.transform = 'translate(' + (p.x - w / 2) + 'px,' + (p.y - p.h / 2) + 'px) rotate(' + p.rot + 'deg)';
+  }
+
+  function snLand(p) {
+    const m = snMouth();
+    const rx = sn.lw * 0.15, ry = sn.lh * 0.085;
+    const dx = (p.x - m.x) / rx, dy = (p.y - m.y) / ry;
+    if (dx * dx + dy * dy <= 1) {
+      p.state = 'in';
+      p.mx = p.x - m.x; p.my = p.y - m.y;
+      sn.score++;
+      snScoreEl.textContent = sn.score;
+      snScoreEl.classList.remove('bump'); void snScoreEl.offsetWidth; snScoreEl.classList.add('bump');
+      snFace('happy', 520);
+      snPopText('+1', m.x, m.y - sn.lh * 0.25, false);
+      snSfx('hit');
+      return;
+    }
+    // missed: bounce off his face if it hit him, otherwise keep falling
+    const onFace = Math.abs(p.x - sn.x) < sn.lw * 0.36 && p.y > sn.y + sn.lh * 0.08 && p.y < sn.y + sn.lh;
+    p.state = 'fall';
+    p.vx = onFace ? Math.sign(p.x - sn.x || 1) * (160 + Math.random() * 140) : (p.tx - p.x0) * 0.6;
+    p.vy = onFace ? -220 : 60;
+    snFace('sad', 380);
+    if (onFace) snPopText('miss', p.x, p.y - 30, true);
+    snSfx('miss');
+  }
+
+  function snPopText(txt, x, y, miss) {
+    const el = document.createElement('div');
+    el.className = 'sn-pop' + (miss ? ' miss' : '');
+    el.textContent = txt;
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    snFx.appendChild(el);
+    setTimeout(() => el.remove(), 720);
+  }
+
+  function snUpdatePouches(dt) {
+    for (let i = sn.pouches.length - 1; i >= 0; i--) {
+      const p = sn.pouches[i];
+      if (p.state === 'fly') {
+        p.t = Math.min(1, p.t + dt / p.dur);
+        const t = p.t;
+        p.x = p.x0 + (p.tx - p.x0) * t;
+        p.y = p.y0 + (p.ty - p.y0) * t - p.arc * 4 * t * (1 - t);
+        p.h = p.h0 + (p.h1 - p.h0) * t;
+        p.rot += p.spin * dt;
+        if (t >= 1) snLand(p);
+      } else if (p.state === 'in') {
+        // stick to his mouth and get sucked in
+        const m = snMouth(), k = Math.pow(0.0005, dt);
+        p.mx *= k; p.my = sn.lh * 0.05 + (p.my - sn.lh * 0.05) * k; // happy mouth sits a bit lower
+        p.x = m.x + p.mx; p.y = m.y + p.my;
+        p.h *= Math.pow(0.02, dt); p.a -= dt * 5;
+      } else {
+        p.vy += 1500 * dt;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        p.rot += p.spin * 0.6 * dt;
+        if (p.y > sn.H * 0.8) p.a -= dt * 4;
+      }
+      if (p.a <= 0 || p.y > sn.H + 60) { p.el.remove(); sn.pouches.splice(i, 1); continue; }
+      snPlacePouch(p);
+    }
+  }
+
+  function snTick(now) {
+    if (!sn.running) return;
+    const dt = Math.min(0.05, (now - sn.last) / 1000 || 0);
+    sn.last = now;
+    sn.timeLeft = Math.max(0, sn.timeLeft - dt);
+    sn.cool -= dt;
+    snMoveLuis(dt);
+    snDrawLuis();
+    snUpdatePouches(dt);
+    snTimeEl.textContent = sn.timeLeft.toFixed(1);
+    snTimeEl.parentElement.classList.toggle('low', sn.timeLeft <= 5);
+    if (sn.timeLeft <= 0) { snEnd(); return; }
+    sn.raf = requestAnimationFrame(snTick);
+  }
+
+  function snClearPouches() {
+    sn.pouches.forEach(p => p.el.remove());
+    sn.pouches = [];
+    snFx.innerHTML = '';
+  }
+
+  function snStart() {
+    snLayout();
+    snClearPouches();
+    Object.assign(sn, { timeLeft: SN_ROUND, score: 0, throws: 0, cool: 0.2, t: 0, pause: 0.4, x: sn.W / 2, tx: sn.W / 2 });
+    snScoreEl.textContent = '0';
+    snHand.src = SN_HAND_SRC;
+    snFace('base');
+    [snStartOverlay, snEndOverlay].forEach(o => { o.classList.remove('show'); o.setAttribute('aria-hidden', 'true'); });
+    snHideLeaderboard();
+    sn.running = true;
+    sn.last = performance.now();
+    cancelAnimationFrame(sn.raf);
+    sn.raf = requestAnimationFrame(snTick);
+  }
+
+  function snEnd() {
+    sn.running = false;
+    cancelAnimationFrame(sn.raf);
+    snTimeEl.textContent = '0.0';
+    snTimeEl.parentElement.classList.remove('low');
+    snSfx('end');
+    document.getElementById('snFinalScore').textContent = sn.score;
+    document.getElementById('snFinalAcc').textContent = sn.throws ? Math.round(100 * sn.score / sn.throws) : 0;
+    snNameForm.style.display = sn.score > 0 ? '' : 'none';
+    snSubmitBtn.disabled = false;
+    snSubmitBtn.textContent = 'SUBMIT SCORE';
+    snSubmitStatus.textContent = sn.score > 0 ? '' : 'not a single one... try again';
+    setTimeout(() => {
+      snEndOverlay.classList.add('show');
+      snEndOverlay.setAttribute('aria-hidden', 'false');
+    }, 500);
+  }
+
+  function snStop() {
+    sn.running = false;
+    cancelAnimationFrame(sn.raf);
+    clearTimeout(sn.faceTimer);
+  }
+
+  // Tiny bleeps so throws feel like something
+  let snAc = null;
+  function snSfx(kind) {
+    try {
+      snAc = snAc || new (window.AudioContext || window.webkitAudioContext)();
+      const t = snAc.currentTime, o = snAc.createOscillator(), g = snAc.createGain();
+      const f = { throw: [520, 260, 0.08, 'triangle'], hit: [330, 880, 0.14, 'square'], miss: [180, 70, 0.18, 'sawtooth'], end: [440, 110, 0.5, 'square'] }[kind];
+      o.type = f[3];
+      o.frequency.setValueAtTime(f[0], t);
+      o.frequency.exponentialRampToValueAtTime(f[1], t + f[2]);
+      g.gain.setValueAtTime(kind === 'throw' ? 0.03 : 0.06, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + f[2]);
+      o.connect(g).connect(snAc.destination);
+      o.start(t); o.stop(t + f[2] + 0.02);
+    } catch (e) { /* no audio, no problem */ }
+  }
+
+  // ---------- Leaderboard ----------
+  async function snShowLeaderboard() {
+    snEndOverlay.classList.remove('show');
+    snEndOverlay.setAttribute('aria-hidden', 'true');
+    snLbOverlay.classList.add('show');
+    snLbOverlay.setAttribute('aria-hidden', 'false');
+    snLbList.innerHTML = '<div class="rx-lb-empty">loading...</div>';
+    let scores = [];
+    try {
+      const r = await fetch(SN_LB_ENDPOINT);
+      if (r.ok) scores = (await r.json()).scores || [];
+    } catch (e) { console.warn('Snus leaderboard fetch failed:', e); }
+    snLbList.innerHTML = '';
+    if (!scores.length) {
+      snLbList.innerHTML = '<div class="rx-lb-empty">no scores yet &middot; be the first</div>';
+      return;
+    }
+    scores.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'rx-lb-row';
+      const mine = sn.lastSubmitted;
+      if (mine && s.score === mine.score && s.name === mine.name) row.classList.add('is-self');
+      const rank = document.createElement('span'); rank.className = 'rx-lb-rank'; rank.textContent = '#' + (i + 1);
+      const name = document.createElement('span'); name.className = 'rx-lb-name'; name.textContent = s.name;
+      const sc = document.createElement('span'); sc.className = 'rx-lb-time'; sc.textContent = s.score + ' snus';
+      row.append(rank, name, sc);
+      snLbList.appendChild(row);
+    });
+  }
+  function snHideLeaderboard() {
+    snLbOverlay.classList.remove('show');
+    snLbOverlay.setAttribute('aria-hidden', 'true');
+    // back to whichever screen was underneath
+    if (!sn.running && snStartOverlay.getAttribute('aria-hidden') === 'true' && sn.throws > 0) {
+      snEndOverlay.classList.add('show');
+      snEndOverlay.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  snNameForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = snNameInput.value.trim();
+    if (!name || sn.score < 1) return;
+    snSubmitBtn.disabled = true;
+    snSubmitBtn.textContent = '...';
+    snSubmitStatus.textContent = 'submitting...';
+    try {
+      const r = await fetch(SN_LB_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, score: sn.score }),
+      });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        snSubmitStatus.textContent = err.error || 'could not submit';
+        snSubmitBtn.disabled = false;
+        snSubmitBtn.textContent = 'SUBMIT SCORE';
+        return;
+      }
+      sn.lastSubmitted = { name: name.slice(0, 20), score: sn.score };
+      snSubmitStatus.textContent = 'submitted!';
+      snSubmitBtn.textContent = 'SUBMITTED';
+      setTimeout(snShowLeaderboard, 700);
+    } catch (err) {
+      snSubmitStatus.textContent = 'connection error';
+      snSubmitBtn.disabled = false;
+      snSubmitBtn.textContent = 'SUBMIT SCORE';
+    }
+  });
+
+  // ---------- Page wiring ----------
+  function openSnus() {
+    if (isWiping) return;
+    closeMenu();
+    runWipe('right', () => {
+      snPage.classList.add('open');
+      snPage.setAttribute('aria-hidden', 'false');
+      snStop();
+      snClearPouches();
+      sn.throws = 0;
+      snEndOverlay.classList.remove('show'); snEndOverlay.setAttribute('aria-hidden', 'true');
+      snHideLeaderboard();
+      snStartOverlay.classList.add('show'); snStartOverlay.setAttribute('aria-hidden', 'false');
+      sn.x = 0; sn.tx = 0;
+      requestAnimationFrame(() => { snLayout(); sn.y = sn.H * 0.03; snDrawLuis(); snFace('base'); });
+    });
+  }
+  function closeSnus() {
+    if (isWiping) return;
+    snStop();
+    runWipe('left', () => {
+      snPage.classList.remove('open');
+      snPage.setAttribute('aria-hidden', 'true');
+      snClearPouches();
+    });
+  }
+  snArena.addEventListener('pointerdown', snThrow);
+  document.getElementById('snBack').addEventListener('click', closeSnus);
+  document.getElementById('snStartBtn').addEventListener('click', snStart);
+  document.getElementById('snReplay').addEventListener('click', snStart);
+  document.getElementById('snLeaderboardBtn').addEventListener('click', snShowLeaderboard);
+  document.getElementById('snLbClose').addEventListener('click', snHideLeaderboard);
+  window.addEventListener('resize', () => { if (snPage.classList.contains('open')) { snLayout(); snDrawLuis(); } });
+  // pause-free: if the tab is hidden mid-round, just let the clock keep its pace on return
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && sn.running) sn.last = performance.now(); });
 
 
   // ================= RETRO DESKTOP =================
